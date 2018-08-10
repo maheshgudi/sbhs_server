@@ -45,3 +45,4 @@ wsgi.log
 *.sqlite3
 data/
 _build/
+sbhs_server/credentials.py
