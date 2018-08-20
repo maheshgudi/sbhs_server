@@ -1,0 +1,117 @@
+{% extends "account/home.html" %}
+{% load staticfiles %}
+{% load widget_tweaks %}
+{% block title %}
+	Book Slot
+{% endblock %}
+{% block content %}
+	{% block headerfiles %}
+		<script src = "{% static 'js/jquery.datetimepicker.full.min.js' %}"></script>
+
+		<script type="{% static 'js/jquery-ui.js' %}"></script>	
+		<link rel="stylesheet" type="text/css" href="{% static 'css/jquery.datetimepicker.css' %}">
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+	{% endblock %}
+	<br>	
+	<div class="row">
+    <div class="col-sm-3 col-md-2 sidebar">
+    	<ul class="nav nav-sidebar nav-stacked">
+			<li class = "active">
+				<a href="#tab_a" data-toggle="pill">Create Slot</a>
+			</li>
+			<li>
+				<a href="#tab_b" data-toggle="pill">Slot History</a>
+			</li>
+		</ul>
+	</div>
+		<div class="tab-content col-md-9 col-md-offset-2 main">
+			<div class = "tab-pane active" id="tab_a">
+				<h3>Book Slot</h3>
+				<form class = "form-horizontal" action = "" method="POST" autocomplete="off"> 
+					<div class = "form-group">
+						{% csrf_token %}
+						{% for field in form %}
+							{% if field.errors %}
+								<div class = "control-group error">
+									<label class = "control-label">
+										{{field.label}}
+									</label>
+									<div class = "controls">
+										{{field}}
+										<span class = "help-inline">
+											{% for error in field.errors %}
+												{{error}}
+											{% endfor %}	
+										</span>
+									</div>
+								</div>
+							{% else %}
+								<div class = "control-group">
+									<div class = "col-xs-2">
+										<label class = "control-label">
+											{{field.label}}:
+										</label>
+										<div class = "control">
+											{{field}}
+											{% if field.help_text %}
+												<p class = "help-inline">
+													<small>{{field.help_text}}</small>
+												</p>
+											{% endif %}
+										</div>
+									</div>
+										
+								</div>
+							{% endif %}
+						{% endfor %}
+						<input type="submit" value = "Create" class = "btn btn-info" name="" >	
+					</div>
+					
+				</form>
+			</div>
+			<div class = "tab-pane" id="tab_b">
+				<form action="" method="POST">
+					{%csrf_token %}
+				<table class="table table-striped">
+
+					<thead>
+						<tr>
+							<b><th></th></b>
+							<b><th>Start Time of a Slot</th></b>
+							<b><th>Duration</th></b>
+							<b><th>Action</th></b>
+						</tr>	
+					</thead>
+					{% for h in history %}							 
+							<tr>
+								{%if h.start_time >= now %}
+								<td><input type="checkbox" name="slots" value="{{h.id}}"/></td>
+								{% else %}
+								<td><input type="hidden"/></td>
+
+								{% endif %}
+								<td>{{h.start_time}}</td>
+								<td>{{h.duration}}</td>
+								{%if h.start_time >= now %}
+								<td><p class="label label-warning">Pending</p></td>
+								{% else %}
+								<td><p class="label label-danger">Finished	</p></td>
+								{% endif %}
+							</tr>
+					{% endfor %}
+				</table>
+				<button class="btn btn-danger" type="submit" name="delete" value="delete">Delete</button>
+			</div>
+		</div>
+	</div>
+	
+	<script type="text/javascript">
+		var dateToday = new Date();
+		$(function(){
+			$(".datetimepicker").datetimepicker({
+				format:'Y-m-d H:i:s',
+				minDate: dateToday, // got this from https://stackoverflow.com/a/9978261/4883946
+			});
+		})
+	</script>
+{% endblock %}

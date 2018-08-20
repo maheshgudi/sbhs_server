@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        {% if user.profile.is_moderator %}
+            <a href="" class="btn btn-info">Show all boards</a>
+            <a href="" class="btn btn-info">Show all bookings</a>
+            <a href="" class="btn btn-info">Show all images</a>
+            <a href="" class="btn btn-info">Test boards</a>
+            <a href="" class="btn btn-info">Update MID</a>
+            <a href="" class="btn btn-info">Fetch Logs</a>
+        {% endif %}
+            <div class="span12" style="position: relative;top: 1.3em;">
+                <ul class="nav nav-pills">
+                    <li id="home-nav"><a href="">Home</a></li>
+                    <li id="book-slot-nav"><a href="{% url 'slot_new' %}">Book slot</a></li>
+                    <li id="view-slot-nav"><a href="">View/Delete slot</a></li>
+                    <li id="download-log-nav"><a href="">Download log files</a></li>
+                    <li id="video-nav"><a href="">Show video</a></li>
+                    <br><br>
+                </ul>
+            </div>
+        <script>
+        document.getElementById("home-nav").classList.add("active");
+        </script>
+        <div class="span12">
+            <h2>Welcome to Single Board Heater System Lab</h2>
+            <br>
+            You can:
+            <ul>
+                <li>book your slot by going to the "Book slot" section above</li>
+                <li>download the client code for experiments using the download link above</li>
+                <li>download your previous experiment logs by going to "Download log files" section above</li>
+                <li>see the experiment video by going to "Show video" section above</li>
+            </ul>
+        </div>
+    </div>    
+</div>
+{% endblock %}

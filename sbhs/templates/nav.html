@@ -1,0 +1,41 @@
+<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar-inner">
+        <div class="container">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'account_enter' %}" class="brand">Single Board Heater System Lab</a>
+                {% else %}
+                    <a href="{% url 'pages_index' %}" class="brand">Single Board Heater System Lab</a>
+                {% endif %}
+    
+
+            <ul class="nav pull-right">
+                {% if user.is_authenticated %}
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">Welcome, {{ user.username }} <b class="caret"></b></a>
+                    <ul class="dropdown-menu" role="menu" aria-labelledby="dLabel">
+                        <li><a href="#passwordModal" role="button" data-toggle="modal">Change Password</a></li>
+                        <li><a href="#machineModal" role="button" data-toggle="modal">Request machine change</a></li>
+                        <li><a href="{% url 'account_logout' %}">Logout</a></li>
+                    </ul>
+                </li>
+                {% else %}
+                <li><a href="{% url 'account_enter' %}">Login / Register</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+    <div class="navbar-inner">
+        <div class="container">
+            <ul class="nav pull-right">
+                <li><a href="{% url 'pages_info' %}">SBHS InfoCentre</a></li>
+                <li><a href="{% url 'pages_downloads' %}" target="_blank">Downloads</a></li>
+                <li><a href="{% url 'pages_theory' %}">Theory</a></li>
+                <li><a href="{% url 'pages_procedure' %}">Procedure</a></li>
+                <li><a href="{% url 'pages_experiments' %}">Experiments</a></li>
+                <li><a href="#">Quiz</a></li>
+                <li><a href="{% url 'pages_feedback' %}">Feedback / Contact Us</a></li> 
+                <li><a href="{% url 'pages_about' %}">About Us</a></li>                
+            </ul>
+        </div>
+    </div>    
+</div>
