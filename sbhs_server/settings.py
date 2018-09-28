@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
-import sbhs_server.credentials as credentials
+import sbhs_server.secret as credentials
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -61,7 +61,8 @@ ROOT_URLCONF = 'sbhs_server.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR,'templates')],
+        'DIRS': [
+                os.path.join(BASE_DIR,'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -170,3 +171,8 @@ PRODUCTION_URL = '127.0.0.1:8000'
 IS_DEVELOPMENT=False
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+RASP_PI_IP = [] 
+# enter comma separated raspberry pi IPs here 
+
+RASPI_SBHS_CONNECTION = True if RASP_PI_IP else False

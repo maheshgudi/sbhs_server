@@ -1,5 +1,6 @@
 {% extends "account/home.html" %}
 {% load staticfiles %}
+{% load custom_filter %}
 {% load widget_tweaks %}
 {% block title %}
 	Book Slot
@@ -26,46 +27,22 @@
 	</div>
 		<div class="tab-content col-md-9 col-md-offset-2 main">
 			<div class = "tab-pane active" id="tab_a">
-				<h3>Book Slot</h3>
+				<br>
+				<h4>Book future slots:</h4>
 				<form class = "form-horizontal" action = "" method="POST" autocomplete="off"> 
+					<center>
 					<div class = "form-group">
 						{% csrf_token %}
-						{% for field in form %}
-							{% if field.errors %}
-								<div class = "control-group error">
-									<label class = "control-label">
-										{{field.label}}
-									</label>
-									<div class = "controls">
-										{{field}}
-										<span class = "help-inline">
-											{% for error in field.errors %}
-												{{error}}
-											{% endfor %}	
-										</span>
-									</div>
-								</div>
-							{% else %}
-								<div class = "control-group">
-									<div class = "col-xs-2">
-										<label class = "control-label">
-											{{field.label}}:
-										</label>
-										<div class = "control">
-											{{field}}
-											{% if field.help_text %}
-												<p class = "help-inline">
-													<small>{{field.help_text}}</small>
-												</p>
-											{% endif %}
-										</div>
-									</div>
-										
-								</div>
-							{% endif %}
-						{% endfor %}
-						<input type="submit" value = "Create" class = "btn btn-info" name="" >	
+						<b>Book for a given date:</b><br/>
+						{{form.as_p}}
+					<button class="btn btn-primary" type="submit" name='book_date' value='book_date'>Book Date</button><br/>
+					<center>OR</center>
+					<b>Book for current date and time</b><br/>
+
+					<button class="btn btn-primary" type="submit" name="book_now" value="book_now">Book Now</button><br/>
 					</div>
+					</center>
+
 					
 				</form>
 			</div>
@@ -91,9 +68,12 @@
 
 								{% endif %}
 								<td>{{h.start_time}}</td>
-								<td>{{h.duration}}</td>
-								{%if h.start_time >= now %}
+								<td>{{h.end_time}}</td>
+								{% compare_slot_time h.start_time h.end_time now as slot_status %}
+								{%if slot_status == "pending" %}
 								<td><p class="label label-warning">Pending</p></td>
+								{% elif slot_status == "ongoing" %}
+								<td><p class="label label-success">Ongoing</p></td>								
 								{% else %}
 								<td><p class="label label-danger">Finished	</p></td>
 								{% endif %}

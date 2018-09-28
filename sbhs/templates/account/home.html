@@ -3,26 +3,20 @@
 {% block content %}
 <div class="container">
     <div class="row">
-        {% if user.profile.is_moderator %}
-            <a href="" class="btn btn-info">Show all boards</a>
-            <a href="" class="btn btn-info">Show all bookings</a>
-            <a href="" class="btn btn-info">Show all images</a>
-            <a href="" class="btn btn-info">Test boards</a>
-            <a href="" class="btn btn-info">Update MID</a>
-            <a href="" class="btn btn-info">Fetch Logs</a>
-        {% endif %}
             <div class="span12" style="position: relative;top: 1.3em;">
                 <ul class="nav nav-pills">
                     <li id="home-nav"><a href="">Home</a></li>
                     <li id="book-slot-nav"><a href="{% url 'slot_new' %}">Book slot</a></li>
-                    <li id="view-slot-nav"><a href="">View/Delete slot</a></li>
                     <li id="download-log-nav"><a href="">Download log files</a></li>
                     <li id="video-nav"><a href="">Show video</a></li>
+                    {% if user.profile.is_moderator %}
+                        <li id="admin-nav"><a href="{% url 'dashboard_index' %}">Dashboard</a></li>
+                    {% endif %}
                     <br><br>
                 </ul>
             </div>
-        <script>
-        document.getElementById("home-nav").classList.add("active");
+        <script type="text/javascript">
+            document.getElementById("home-nav").classList.add("active");
         </script>
         <div class="span12">
             <h2>Welcome to Single Board Heater System Lab</h2>
