@@ -1,0 +1,55 @@
+{% extends "account/home.html" %}
+{% block title %}
+	Dashboard
+{% endblock %}
+{% block content %}
+	<div class="container">
+    <div class="row">
+            <div class="span12" style="position: relative;top: 1.3em;">
+                <ul class="nav nav-pills">
+                    <li id=""><a href="">Show all Boards</a></li>
+                    <li id=""><a href="">Show all Bookings</a></li>
+                    <li id=""><a href="">Show all Images</a></li>
+                    <li id=""><a href="">Test Boards</a></li>
+                    <li id=""><a href="">Update MID</a></li>
+                    <li id=""><a href="">Fetch Logs</a></li>
+                    <li id=""><a href="">Download Experiment Directory</a></li>
+                    <li id=""><a href="">Turn On all Boards</a></li>
+                    <li id=""><a href="">Turn Off all Boards</a></li>
+                    <li id=""><a href="">Book All Slots</a></li>
+                    <br><br>
+                </ul>
+            </div>
+
+        <div class="span12">
+        	<h4>MID allotment mode is . <small>Change to <a href=""></a></small></h4>
+        	<h1>Board Status</h1>
+        	<table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Board MID</th>
+                        <th>Status</th>
+                        <th>Power Status</th>
+                        <th>Webcam</th>
+                        <th>Temperature Profile</th>
+                        <th>Download Logs</th>
+                        
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for b in boards %}
+                    <tr>
+                        <td class = "board_id">{{ b.mid }}</td>
+                        <td><span style="cursor: pointer;" class="label label-{% if not b.online %}important{% elif b.temp_offline %}warning{% else %}success{% endif %}">{% if not b.online %}Offline{% elif b.temp_offline %}Temp Offline{% else %}Online{% endif %}</span></td>
+                        <td><span style = "cursor: pointer;" class = "label {% if not b.power_status %}danger{% else %}success{% endif %}">{% if not b.power_status %}OFF{% else %}ON{% endif %}</span></td>                        
+                        <td><a href="{% url 'webcam_show_video_to_admin' b.mid %}" target="_blank">View image</a></td>
+                        <td><a href="{% url 'admin_profile' b.mid %}">View</a></td>
+                        <td><a href="{% url 'admin_logs' b.mid %}">Download</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+      	</div>
+    </div>    
+</div>
+{% endblock %}
