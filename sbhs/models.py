@@ -32,6 +32,22 @@ class Board(models.Model):
 
     mid = models.IntegerField(unique=True)
     online = models.BooleanField(default=False)
+    usb_path = models.URLField(max_length=200, default="/dev/ttyUSB0")
+    raspi_path = models.URLField(max_length=200, default="localhost:8000")
+
+    def save_board_details(self, raspi_ip, usb_mac_map):
+        for devices in usb_mac_map:
+            board = Board.objects.filter(mid=devices["sbhs_mac_id"])
+            if board.exists():
+                board = board.first()
+            else:
+                board = self
+                board.mid = devices["sbhs_mac_id"] 
+            board.raspi_path = raspi_ip
+            board.usb_path = "/dev/ttyUSB{}".format(devices["usb_id"])
+            board.online = True
+            board.save()
+
 
     class Meta:
         ordering = ['mid',]
