@@ -10,7 +10,7 @@
                     <li id="download-log-nav"><a href="">Download log files</a></li>
                     <li id="video-nav"><a href="">Show video</a></li>
                     {% if user.profile.is_moderator %}
-                        <li id="admin-nav"><a href="{% url 'dashboard_index' %}">Dashboard</a></li>
+                        <li id="admin-nav"><a href="{% url 'moderator_dashboard' %}">Moderator Dashboard</a></li>
                     {% endif %}
                     <br><br>
                 </ul>

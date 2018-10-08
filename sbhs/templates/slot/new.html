@@ -15,17 +15,17 @@
 	{% endblock %}
 	<br>	
 	<div class="row">
-    <div class="col-sm-3 col-md-2 sidebar">
-    	<ul class="nav nav-sidebar nav-stacked">
-			<li class = "active">
-				<a href="#tab_a" data-toggle="pill">Create Slot</a>
-			</li>
-			<li>
-				<a href="#tab_b" data-toggle="pill">Slot History</a>
-			</li>
-		</ul>
-	</div>
-		<div class="tab-content col-md-9 col-md-offset-2 main">
+	    <div class="col-sm-3 col-md-2 sidebar">
+	    	<ul class="nav nav-sidebar nav-stacked">
+				<li class = "active">
+					<a href="#tab_a" data-toggle="pill">Create Slot</a>
+				</li>
+				<li>
+					<a href="#tab_b" data-toggle="pill">Slot History</a>
+				</li>
+			</ul>
+		</div>
+		<div class="tab-content col-md-10">
 			<div class = "tab-pane active" id="tab_a">
 				<br>
 				<h4>Book future slots:</h4>
@@ -34,7 +34,7 @@
 					<div class = "form-group">
 						{% csrf_token %}
 						<b>Book for a given date:</b><br/>
-						{{form.as_p}}
+									{{form.as_p}}
 					<button class="btn btn-primary" type="submit" name='book_date' value='book_date'>Book Date</button><br/>
 					<center>OR</center>
 					<b>Book for current date and time</b><br/>
@@ -49,38 +49,39 @@
 			<div class = "tab-pane" id="tab_b">
 				<form action="" method="POST">
 					{%csrf_token %}
-				<table class="table table-striped">
+						<table class="table table-striped">
 
-					<thead>
-						<tr>
-							<b><th></th></b>
-							<b><th>Start Time of a Slot</th></b>
-							<b><th>Duration</th></b>
-							<b><th>Action</th></b>
-						</tr>	
-					</thead>
-					{% for h in history %}							 
+						<thead>
 							<tr>
-								{%if h.start_time >= now %}
-								<td><input type="checkbox" name="slots" value="{{h.id}}"/></td>
-								{% else %}
-								<td><input type="hidden"/></td>
+								<b><th></th></b>
+								<b><th>Start Time of a Slot</th></b>
+								<b><th>Duration</th></b>
+								<b><th>Action</th></b>
+							</tr>	
+						</thead>
+						{% for h in history %}							 
+								<tr>
+									{%if h.start_time >= now %}
+									<td><input type="checkbox" name="slots" value="{{h.id}}"/></td>
+									{% else %}
+									<td><input type="hidden"/></td>
 
-								{% endif %}
-								<td>{{h.start_time}}</td>
-								<td>{{h.end_time}}</td>
-								{% compare_slot_time h.start_time h.end_time now as slot_status %}
-								{%if slot_status == "pending" %}
-								<td><p class="label label-warning">Pending</p></td>
-								{% elif slot_status == "ongoing" %}
-								<td><p class="label label-success">Ongoing</p></td>								
-								{% else %}
-								<td><p class="label label-danger">Finished	</p></td>
-								{% endif %}
-							</tr>
-					{% endfor %}
-				</table>
-				<button class="btn btn-danger" type="submit" name="delete" value="delete">Delete</button>
+									{% endif %}
+									<td>{{h.start_time}}</td>
+									<td>{{h.end_time}}</td>
+									{% compare_slot_time h.start_time h.end_time now as slot_status %}
+									{%if slot_status == "pending" %}
+									<td><p class="label label-warning">Pending</p></td>
+									{% elif slot_status == "ongoing" %}
+									<td><p class="label label-success">Ongoing</p></td>								
+									{% else %}
+									<td><p class="label label-danger">Finished	</p></td>
+									{% endif %}
+								</tr>
+						{% endfor %}
+					</table>
+					<button class="btn btn-danger" type="submit" name="delete" value="delete">Delete</button>
+				</form>
 			</div>
 		</div>
 	</div>

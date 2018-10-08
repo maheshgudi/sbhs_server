@@ -1,55 +1,105 @@
 {% extends "account/home.html" %}
+{% load staticfiles %}
 {% block title %}
 	Dashboard
 {% endblock %}
-{% block content %}
-	<div class="container">
-    <div class="row">
-            <div class="span12" style="position: relative;top: 1.3em;">
-                <ul class="nav nav-pills">
-                    <li id=""><a href="">Show all Boards</a></li>
-                    <li id=""><a href="">Show all Bookings</a></li>
-                    <li id=""><a href="">Show all Images</a></li>
-                    <li id=""><a href="">Test Boards</a></li>
-                    <li id=""><a href="">Update MID</a></li>
-                    <li id=""><a href="">Fetch Logs</a></li>
-                    <li id=""><a href="">Download Experiment Directory</a></li>
-                    <li id=""><a href="">Turn On all Boards</a></li>
-                    <li id=""><a href="">Turn Off all Boards</a></li>
-                    <li id=""><a href="">Book All Slots</a></li>
-                    <br><br>
-                </ul>
-            </div>
+{% block headerfiles %}
 
-        <div class="span12">
-        	<h4>MID allotment mode is . <small>Change to <a href=""></a></small></h4>
-        	<h1>Board Status</h1>
-        	<table class="table table-bordered">
-                <thead>
-                    <tr>
-                        <th>Board MID</th>
-                        <th>Status</th>
-                        <th>Power Status</th>
-                        <th>Webcam</th>
-                        <th>Temperature Profile</th>
-                        <th>Download Logs</th>
-                        
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for b in boards %}
-                    <tr>
-                        <td class = "board_id">{{ b.mid }}</td>
-                        <td><span style="cursor: pointer;" class="label label-{% if not b.online %}important{% elif b.temp_offline %}warning{% else %}success{% endif %}">{% if not b.online %}Offline{% elif b.temp_offline %}Temp Offline{% else %}Online{% endif %}</span></td>
-                        <td><span style = "cursor: pointer;" class = "label {% if not b.power_status %}danger{% else %}success{% endif %}">{% if not b.power_status %}OFF{% else %}ON{% endif %}</span></td>                        
-                        <td><a href="{% url 'webcam_show_video_to_admin' b.mid %}" target="_blank">View image</a></td>
-                        <td><a href="{% url 'admin_profile' b.mid %}">View</a></td>
-                        <td><a href="{% url 'admin_logs' b.mid %}">Download</a></td>
-                    </tr>
+        <script type="{% static 'js/jquery-ui.js' %}"></script> 
+        <link rel="stylesheet" type="text/css" href="{% static 'css/jquery.datetimepicker.css' %}"/>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css"/>
+{% endblock %}
+{% block content %}
+<br>
+<div class="row">
+    <div class="col-sm-3 col-md-2 sidebar">
+        <ul class="nav nav-sidebar nav-stacked">
+            <li class = "active">
+                <a href="#tab_a" data-toggle="pill">Show all Boards</a>
+            </li>
+            <li>
+                <a href="#tab_b" data-toggle="pill">Show all Bookings</a>
+            </li>
+            <li>
+                <a href="#tab_c" data-toggle="pill">Show all Images</a>
+            </li>
+            <li>
+                <a href="#tab_d" data-toggle="pill">Test Boards</a>
+            </li>
+            <li>
+                <a href="#tab_e" data-toggle="pill">Update MID</a>
+            </li>
+            <li>
+                <a href="#tab_f" data-toggle="pill">Fetch Logs</a>
+            </li>
+            <li>
+                <a href="#tab_g" data-toggle="pill">Download Experiment Directory</a>
+            </li>
+            <li>
+                <a href="#tab_h" data-toggle="pill">Turn On all Boards</a>
+            </li>
+            <li>
+                <a href="#tab_i" data-toggle="pill">Turn Off all Boards</a>
+            </li>
+            <li>
+                <a href="#tab_j" data-toggle="pill">Book all Slots</a>
+            </li>
+        </ul>
+    </div> 
+    <div class="tab-content col-md-10">
+        {# Div for Show all boards #}
+            <div class = "tab-pane active" id="tab_a">
+                <h4>All Active Boards</h4>
+                <br>
+                <table class = "table table-striped">
+                    {% for board in all_active_boards %}
+                        <thead>
+                            <tr>
+                                <th>Board MID</th>
+                                <th>Webcam</th>
+                                <th>Temperature Profile</th>
+                                <th>Download Logs</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{board.mac_ids.0}}</td>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                        </tbody>
                     {% endfor %}
-                </tbody>
-            </table>
-      	</div>
-    </div>    
+                </table>
+            </div>
+            <div class = "tab-pane" id="tab_b">
+                <h4>All Bookings</h4>
+            </div>
+            <div class = "tab-pane" id="tab_c">
+                <h4>All Images</h4>
+            </div>
+            <div class = "tab-pane" id="tab_d">
+                <h4>Test Boards</h4>
+            </div>
+            <div class = "tab-pane" id="tab_e">
+                <h4>Update MID</h4>
+            </div>
+            <div class = "tab-pane" id="tab_f">
+                <h4>Fetch Logs</h4>
+            </div>
+            <div class = "tab-pane" id="tab_g">
+                <h4>Download Experiment Directory</h4>
+            </div>
+            <div class = "tab-pane" id="tab_h">
+                <h4>Turn On all Boards</h4>
+            </div>
+            <div class = "tab-pane" id="tab_i">
+                <h4>Turn Off all Boards</h4>
+            </div>
+            <div class = "tab-pane" id="tab_j">
+                <h4>Book all Slots</h4>
+            </div>
+        </div>   
 </div>
+    
 {% endblock %}

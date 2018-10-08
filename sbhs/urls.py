@@ -1,7 +1,7 @@
 from django.conf.urls import url
 from django.contrib.auth.views import (
     password_reset, password_change, password_change_done, password_reset_done,
-    password_reset_confirm, password_reset_complete
+    password_reset_confirm, password_reset_complete,
     )
 from . import views
 
@@ -54,12 +54,14 @@ urlpatterns = [
     ################## Slot Urls #######################
     url(r'^slot/new/$',views.slot_new,name='slot_new'),
 
-    ################## Dashboard Urls ######################
-    url(r'^dashboard/$',views.dashboard_index, name='dashboard_index'),
-
     ################## Experiment urls #####################
     url(r'^experiment/check_connection/$',views.check_connection,
             name='experiment_check_connection'),
 
-    url(r'^experiment/initiate/$',views.initiation,name='experiment_initiate')
+    url(r'^experiment/initiate/$',views.initiation,name='experiment_initiate'),
+    url(r'^experiment/map_machines/$',views.map_sbhs_to_rpi,name='experiment_initiate'),
+
+    ################## Moderator urls #####################
+    url(r'^moderator/$',views.moderator_dashboard,
+            name='moderator_dashboard'),
 ]
