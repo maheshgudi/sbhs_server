@@ -1,9 +1,26 @@
 from flask import (Flask, flash, redirect, render_template, request, url_for,
                    Response, jsonify)
-from sbhs import SbhsServer
+from logging.config import dictConfig
+from sbhs import SbhsServer, Sbhs
+
+# dictConfig({
+#      'version': 1,
+#     'formatters': {'default': {
+#         'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
+#     }},
+#     'handlers': {'file': {
+#         'class': 'logging.FileHandler',
+#         'formatter': 'default',
+#         'filename': 'error.log',
+#     }},
+
+#     'root': {
+#         'level': 'DEBUG',
+#         'handlers': ['file']
+#     }
+# })
 
 app = Flask(__name__)
-
 
 @app.route('/experiment/check_connection')
 def check_connection():
@@ -21,8 +38,8 @@ def get_machine_ids():
 
 @app.route('/experiment/set_fan/<int:dev_num>/<int:fan_speed>')
 def set_fan(dev_num, fan_speed):
-    sbhs_server = SbhsServer()
-    connect = sbhs_server.connect_device(dev_num)
+    sbhs_server = Sbhs(dev_num)
+    connect = sbhs_server.connect_device()
     message = "Could not set fan speed"
     if connect:
         status = sbhs_server.set_machine_fan(fan_speed)
@@ -32,8 +49,8 @@ def set_fan(dev_num, fan_speed):
 
 @app.route('/experiment/set_heat/<int:dev_num>/<int:heat>')
 def set_heat(dev_num, heat):
-    sbhs_server = SbhsServer()
-    connect = sbhs_server.connect_device(dev_num)
+    sbhs_server = Sbhs(dev_num)
+    connect = sbhs_server.connect_device()
     message = "Could not set heat"
     if connect:
         status = sbhs_server.set_machine_heat(heat)
@@ -43,8 +60,8 @@ def set_heat(dev_num, heat):
 
 @app.route('/experiment/get_temp/<int:dev_num>')
 def get_temp(dev_num):
-    sbhs_server = SbhsServer()
-    connect = sbhs_server.connect_device(dev_num)
+    sbhs_server = Sbhs(dev_num)
+    connect = sbhs_server.connect_device()
     message = "Could not fetch temperature"
     if connect:
         status = sbhs_server.get_machine_temp()
@@ -53,8 +70,8 @@ def get_temp(dev_num):
 
 @app.route('/experiment/reset/<int:dev_num>')
 def reset(dev_num):
-    sbhs_server = SbhsServer()
-    connect = sbhs_server.connect_device(dev_num)
+    sbhs_server = Sbhs(dev_num)
+    connect = sbhs_server.connect_device()
     message = "Reset Failed"
     if connect:
         status = sbhs_server.reset_board()
@@ -63,8 +80,8 @@ def reset(dev_num):
 
 @app.route('/experiment/disconnect/<int:dev_num>')
 def disconnect(dev_num):
-    sbhs_server = SbhsServer()
-    connect = sbhs_server.connect_device(dev_num)
+    sbhs_server = Sbhs(dev_num)
+    connect = sbhs_server.connect_device()
     message = "Disconnect Failed"
     if connect:
         status = sbhs_server.disconnect_machine()
