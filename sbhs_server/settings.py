@@ -130,7 +130,7 @@ STATIC_URL = '/static/'
 SLOT_DURATION = 55
 
 MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'experiments/')
 
 EMAIL_USE_TLS = True
 
@@ -172,7 +172,20 @@ IS_DEVELOPMENT=False
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
-RASP_PI_IP = [] 
-# enter comma separated raspberry pi IPs here 
+RASP_PI_IPS = [] 
+# RASP_PI_IPS = ['10.101.202.74:1234'] 
+# enter comma separated raspberry pi IPs here with ports
+# for e.g 127.0.0.1:1234
 
-RASPI_SBHS_CONNECTION = True if RASP_PI_IP else False
+CLIENT_VERSION = 3
+#Client version supported by Django server
+
+EXPERIMENT_LOGS_DIR = os.path.join(BASE_DIR, 'experiments')
+#Path for user experiment folders on Django server.
+
+SBHS_GLOBAL_LOG_DIR = os.path.join(BASE_DIR, 'log')
+# Path for sbhs global log directory on Django server.
+
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+CSRF_COOKIE_NAME = "pfesgbxra"
+SESSION_COOKIE_NAME = "frffvbaVq"

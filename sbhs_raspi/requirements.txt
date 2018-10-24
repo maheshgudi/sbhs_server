@@ -1,6 +1,0 @@
-# Please run sbhs_communication_server files i.e. sbhs_server.py and sbhs.py in python 2 only.
-# This is because we could not figure out the working of pyserial with python 3.
- 
-flask==1.0.2
-pyserial==3.4
-
