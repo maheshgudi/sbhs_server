@@ -112,4 +112,26 @@ class SlotCreationForm(forms.ModelForm):
 	class Meta:
 		model = Slot
 		fields = ['start_time']
+		widgets = {
+			'start_time':forms.DateInput(attrs={
+				'class':'datetimepicker'
+			}),
+		}
 		
+class FilterLogsForm(forms.ModelForm):
+	class Meta:
+		model = Slot
+		
+		fields = ['start_time','end_time']
+		widgets = {
+			'start_time':forms.DateInput(attrs={
+					'class':'datetimepicker',
+					'name': 'start_date',
+					'readonly':'readonly'
+				}),
+			'end_time':forms.DateInput(attrs={
+					'class':'datetimepicker',
+					'name':'end_date',
+					'readonly':'readonly'
+				}),
+		}

@@ -32,7 +32,7 @@ class Board(models.Model):
 
     mid = models.IntegerField(unique=True)
     online = models.BooleanField(default=False)
-    usb_path = models.URLField(max_length=200, default="/dev/ttyUSB0")
+    usb_id = models.IntegerField(default="0")
     raspi_path = models.URLField(max_length=200, default="localhost:8000")
 
     def save_board_details(self, raspi_ip, usb_mac_map):
@@ -44,10 +44,18 @@ class Board(models.Model):
                 board = self
                 board.mid = devices["sbhs_mac_id"] 
             board.raspi_path = raspi_ip
-            board.usb_path = "/dev/ttyUSB{}".format(devices["usb_id"])
+            board.usb_path = int(devices["usb_id"])
             board.online = True
             board.save()
 
+    def switch_off_inactive_boards(self, online_mids):
+        all_boards = Board.objects.all()
+        for board in all_boards:
+            if board.mid not in online_mids: 
+                board.online = False
+            elif board.mid == online_mids:
+                board.online = True
+            board.save()
 
     class Meta:
         ordering = ['mid',]
@@ -86,6 +94,15 @@ class Profile(models.Model):
     def __str__(self):
         return '%s' % (self.user)
 
+
+class SlotManager(models.Manager):
+
+    def get_current_slots(self, user):
+        now = timezone.now()
+        slots = self.filter(user=user, start_time__lte=now, end_time__gt=now)
+        return slots
+
+
 class Slot(models.Model):
     user = models.ForeignKey(User)
     start_time = models.DateTimeField("Start time of a slot",
@@ -94,16 +111,18 @@ class Slot(models.Model):
                 default=timezone.now()+timedelta(
                     minutes=settings.SLOT_DURATION))
 
+    objects = SlotManager()
+
     def __str__(self):
         return '{} {}'.format(self.start_time, self.end_time)
-
-    def slots_now():
-        now = datetime.datetime.now()
-        slots = Slot.objects.filter(start_time=now)
-        return slots
 
 
 class Experiment(models.Model):
     slot = models.ForeignKey("Slot")
     log = models.CharField(max_length=255)
     checksum = models.CharField(max_length=255, null=True, blank=True)
+
+
+class UserBoard(models.Model):
+    user = models.ForeignKey(User)
+    board = models.ForeignKey(Board)
