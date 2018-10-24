@@ -13,3 +13,13 @@ def compare_slot_time(start_time, end_time, now):
     else:
     	slot = "finished"
     return slot
+
+
+@register.simple_tag
+def vacant_slot(start_time, end_time, now):
+    slot = "vacant"
+    if start_time <= now <= end_time:
+    	slot ="occupied"
+    elif start_time >= now:
+    	slot ="vacant"
+    return slot
