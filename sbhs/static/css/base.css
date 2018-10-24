@@ -1,0 +1,29 @@
+.content { 
+    padding-top: 65px; 
+}
+.footer{
+	position: fixed;
+	bottom: 0;
+	right: 0;
+	left: 0;
+	color: white;
+	font-size:small;
+	background-color: #292c2f;
+	box-sizing: border-box;
+	width: 100%;
+	font: bold 12px;
+	overflow: auto;
+	clear:both;
+	padding-top: 2px;
+	height: 10%;
+}
+
+html, body{
+	font-size:10px;
+	overflow:auto;
+	height:100%;
+	overflow-x:hidden;
+	text-align:center;
+	width:1024px;
+	margin: 0px auto 0px auto;
+}
