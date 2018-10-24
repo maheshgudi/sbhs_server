@@ -11,7 +11,7 @@
 
 		<script type="{% static 'js/jquery-ui.js' %}"></script>	
 		<link rel="stylesheet" type="text/css" href="{% static 'css/jquery.datetimepicker.css' %}">
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+		<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
 	{% endblock %}
 	<br>	
 	<div class="row">
@@ -75,7 +75,7 @@
 									{% elif slot_status == "ongoing" %}
 									<td><p class="label label-success">Ongoing</p></td>								
 									{% else %}
-									<td><p class="label label-danger">Finished	</p></td>
+									<td><p class="label label-danger">Finished</p></td>
 									{% endif %}
 								</tr>
 						{% endfor %}

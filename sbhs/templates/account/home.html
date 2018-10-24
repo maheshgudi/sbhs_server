@@ -3,18 +3,6 @@
 {% block content %}
 <div class="container">
     <div class="row">
-            <div class="span12" style="position: relative;top: 1.3em;">
-                <ul class="nav nav-pills">
-                    <li id="home-nav"><a href="">Home</a></li>
-                    <li id="book-slot-nav"><a href="{% url 'slot_new' %}">Book slot</a></li>
-                    <li id="download-log-nav"><a href="">Download log files</a></li>
-                    <li id="video-nav"><a href="">Show video</a></li>
-                    {% if user.profile.is_moderator %}
-                        <li id="admin-nav"><a href="{% url 'moderator_dashboard' %}">Moderator Dashboard</a></li>
-                    {% endif %}
-                    <br><br>
-                </ul>
-            </div>
         <script type="text/javascript">
             document.getElementById("home-nav").classList.add("active");
         </script>

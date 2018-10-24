@@ -5,101 +5,52 @@
 {% endblock %}
 {% block headerfiles %}
 
-        <script type="{% static 'js/jquery-ui.js' %}"></script> 
+        <script src="{% static 'js/jquery-ui.js' %}"></script> 
         <link rel="stylesheet" type="text/css" href="{% static 'css/jquery.datetimepicker.css' %}"/>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css"/>
+        <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}"/>
+        <script type="text/javascript" src = "https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
 {% endblock %}
 {% block content %}
 <br>
 <div class="row">
-    <div class="col-sm-3 col-md-2 sidebar">
+    <div class="col-md-2 col-md-2 sidebar">
         <ul class="nav nav-sidebar nav-stacked">
             <li class = "active">
-                <a href="#tab_a" data-toggle="pill">Show all Boards</a>
+                <a href="{% url 'moderator_dashboard' %}">Show all Boards</a>
             </li>
             <li>
-                <a href="#tab_b" data-toggle="pill">Show all Bookings</a>
+                <a href="{% url 'all_bookings' %}">Show all Bookings</a>
             </li>
             <li>
-                <a href="#tab_c" data-toggle="pill">Show all Images</a>
+                <a href="{% url 'all_images' %}">Show all Images</a>
             </li>
             <li>
-                <a href="#tab_d" data-toggle="pill">Test Boards</a>
+                <a href="{% url 'test_boards' %}">Test Boards</a>
             </li>
             <li>
-                <a href="#tab_e" data-toggle="pill">Update MID</a>
+                <a href="{% url 'update_mid' %}">Update MID</a>
             </li>
             <li>
-                <a href="#tab_f" data-toggle="pill">Fetch Logs</a>
+                <a href="{% url 'fetch_logs' %}">Fetch Logs</a>
             </li>
             <li>
-                <a href="#tab_g" data-toggle="pill">Download Experiment Directory</a>
+                <a href="{% url 'logs_folder_index' %}">Download Experiment Directory</a>
             </li>
             <li>
-                <a href="#tab_h" data-toggle="pill">Turn On all Boards</a>
+                <a href="{% url 'turn_on_all_boards' %}">Turn On all Boards</a>
             </li>
             <li>
-                <a href="#tab_i" data-toggle="pill">Turn Off all Boards</a>
+                <a href="{% url 'turn_off_all_boards' %}">Turn Off all Boards</a>
             </li>
             <li>
-                <a href="#tab_j" data-toggle="pill">Book all Slots</a>
+                <a href="{% url 'book_all_suser_slots' %}">Book all Slots</a>
             </li>
         </ul>
     </div> 
-    <div class="tab-content col-md-10">
-        {# Div for Show all boards #}
-            <div class = "tab-pane active" id="tab_a">
-                <h4>All Active Boards</h4>
-                <br>
-                <table class = "table table-striped">
-                    {% for board in all_active_boards %}
-                        <thead>
-                            <tr>
-                                <th>Board MID</th>
-                                <th>Webcam</th>
-                                <th>Temperature Profile</th>
-                                <th>Download Logs</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>{{board.mac_ids.0}}</td>
-                                <td></td>
-                                <td></td>
-                                <td></td>
-                            </tr>
-                        </tbody>
-                    {% endfor %}
-                </table>
-            </div>
-            <div class = "tab-pane" id="tab_b">
-                <h4>All Bookings</h4>
-            </div>
-            <div class = "tab-pane" id="tab_c">
-                <h4>All Images</h4>
-            </div>
-            <div class = "tab-pane" id="tab_d">
-                <h4>Test Boards</h4>
-            </div>
-            <div class = "tab-pane" id="tab_e">
-                <h4>Update MID</h4>
-            </div>
-            <div class = "tab-pane" id="tab_f">
-                <h4>Fetch Logs</h4>
-            </div>
-            <div class = "tab-pane" id="tab_g">
-                <h4>Download Experiment Directory</h4>
-            </div>
-            <div class = "tab-pane" id="tab_h">
-                <h4>Turn On all Boards</h4>
-            </div>
-            <div class = "tab-pane" id="tab_i">
-                <h4>Turn Off all Boards</h4>
-            </div>
-            <div class = "tab-pane" id="tab_j">
-                <h4>Book all Slots</h4>
-            </div>
-        </div>   
+       
+<div class="col-md-8 col-md-offset-1 main">
+{% block main %}
+{% endblock %}
 </div>
-    
+</div>
 {% endblock %}

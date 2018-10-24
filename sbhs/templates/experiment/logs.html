@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}
+	Download Previous log files
+{% endblock %}
+{% block content %}
+<div class = "container">
+	<div class = "row">
+		<h3>Download previous log files</h3>
+		<table class = "table table-condensed">
+			<thead>
+				<tr>
+					<th>Date</th>
+                    <th>Slot timings</th>
+                    <th>Filename</th>
+                    <th>Download</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for exp in experiment %}
+					<tr>
+						<td>{{exp.slot.start_time|date:"M d, Y"}}</td>
+						<td>{{exp.slot.start_time|time}} -- {{exp.slot.end_time|time}} </td>
+						<td>{{exp.logname}}</td>
+						<td><a href="{% url 'experiment_logs' exp.slot.id %}" target="_blank">Download</a></td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	</div>
+</div>
+{% endblock %}

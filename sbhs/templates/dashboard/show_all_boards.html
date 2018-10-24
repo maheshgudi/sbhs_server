@@ -1,0 +1,40 @@
+{% extends 'dashboard/dashboard_index.html' %}
+{% block title %}
+    All boards
+{% endblock %}
+
+{% block main %}
+<div class="tab-content col-md-10">
+        {# Div for Show all boards #}
+            <div class = "tab-pane active" id="tab_a">
+                <h4>All Active Boards</h4>
+                <br>
+                <table class = "table table-striped inlineTable">
+                        <thead>
+                            <tr>
+                                <th>Board MID</th>
+                                <th>Status</th>
+                                <th>Power Status</th>
+                                <th>Webcam</th>
+                                <th>Temperature Profile</th>
+                                <th>Download Logs</th>
+                        
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for board in all_boards %}
+                            <tr>
+                                <td>{{board.mid}}</td>
+                                <td><span style="cursor: pointer;" class = "label label-{% if board.online %}success{% else %}danger{% endif %}">{% if board.online %}Online{% else %}Offline{% endif %}</span></td>
+                                <td><span style="cursor: pointer;" class = "label label-{% if board.online %}success{% else %}danger{% endif %}">{% if board.online %}On{% else %}Off{% endif %}</span></td>
+                                <td><a href = "">View Image</a></td>
+                                <td><a href = "{% url 'profile' board.mid %}">View Profile</a></td>
+                                <td><a href = "{% url 'download_log' board.mid %}" target="_blank">Download</a></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                </table>
+            </div>
+        </div>
+
+{% endblock %}

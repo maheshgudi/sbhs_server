@@ -9,22 +9,66 @@
 	<link rel="stylesheet" type="text/css" href="{% static 'img/favicon.ico' %}">
 	<link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap.min.css' %}">	
 	<link rel="stylesheet" type="text/css" href="{% static 'css/bootstrap-responsive.min.css' %}">
+	<link rel="stylesheet" type="text/css" href="{% static 'css/base.css' %}">
 	<script src="{% static 'js/jquery-latest.min.js' %}"></script>
 	<script src="{% static 'js/bootstrap.min.js' %}"></script>
 
 	{% block headerfiles %}
 	{% endblock %}
 	
-	<style>
-		html { margin: 0; height: 100%; }
-    	body { padding-top: 70px; position: relative; margin: 0; min-height: 88%; }
-	</style>
-	
 	{% block style_block %}
 	{% endblock %}
 </head>
 <body>
-	{% include 'nav.html' %}
+	{% block nav %}
+		<nav class="navbar navbar-fixed-top navbar-inverse">
+			<div class="container">
+				
+				<div class="navbar-header">
+		    	<a class="navbar-brand navbar-left" href="{% url 'pages_index' %}" class="brand">Single Board Heater System Lab</a>
+				</div>
+
+				<div id="navbar" class="collapse navbar-collapse">
+					<ul class="nav navbar-nav navbar-right">
+						{% if user.is_authenticated %}
+							<li id="book-slot-nav"><a href="{% url 'slot_new' %}">Book slot</a></li>
+							<li id="download-log-nav"><a href="{% url 'experiment_logs' %}">Download log files</a></li>
+							<li id="video-nav"><a href="">Show video</a></li>
+							{% if user.profile.is_moderator %}
+								<li id="admin-nav"><a href="{% url 'moderator_dashboard' %}">Moderator Dashboard</a></li>
+							{% endif %}
+							{% endif %}
+							<li class="nav-item dropdown">
+								<a class="dropdown-toggle nav-link" id="info_dropdown" data-toggle="dropdown" href="#">SBHS InfoCentre
+								    <span class="caret"></span></a>
+										<div class="dropdown-menu">
+											<ul class="nav">
+												<li><a class="dropdown-item" href="{% url 'pages_info'%}#info">Info</a></li>
+												<li><a class="dropdown-item" href="{% url 'pages_info'%}#theory">Theory</a><li>
+												<li><a class="dropdown-item" href="{% url 'pages_info'%}#procedure">Procedure</a></li>
+											</ul>
+										</div>
+							</li>
+
+							{% if user.is_authenticated %}
+								<li class="nav-item dropdown">
+									<a class="dropdown-toggle nav-link" id="user_dropdown" data-toggle="dropdown" href="#">{{ user.username|title }} <span class="caret"></span></a>
+									<div class="dropdown-menu">
+										<ul class="nav">
+							        <li><a class="dropdown-item" href="{% url 'password_change'%}">Change Password</a></li>
+							        <li><a>Request machine change</a></li>
+							        <li><a href="{% url 'account_logout' %}">Logout</a></li>
+										</ul>
+									</div>
+								</li>
+							{% else %}
+							<li><a href="{% url 'account_enter' %}">Log In</a></li>
+							{% endif %}
+					</div><!-- /.navbar -->
+			</div><!-- /.container -->
+		</nav><!-- /.navbar -->
+{% endblock %}
+
 	{% if messages %}	
 		<div class = "container">
 			{% for message in messages %}
@@ -35,10 +79,53 @@
 			{% endfor %}		
 		</div>
 	{% endif %}
-	{% block content %}
-	{% endblock %}
-	<br><br><br>
-	{% include 'footer.html' %}
-	{% include 'modals.html' %}
+	<div class="content">
+		{% block content %}
+		{% endblock %}
+	</div>
+	
+	<div class="footer">
+	{% block footer %}
+		<div class="footer-left">
+				<p>Server time: <span id="timer">{% now "jS M Y h:i:s A" %}</span>
+				<span>Copyright &copy; {% now "Y" %}</span></p>
+		</div>
+
+		<div class="container text-center">
+			<p>Designed and hosted by <a href="http://www.cdeep.iitb.ac.in/" target="_blank">Automation Lab, CDEEP</a>,<a href="http://www.iitb.ac.in" target="_blank"> IIT Bombay</a>
+		</div>
+
+		<div class="container text-center">
+			<a class = "text-muted credit" href="{% url 'pages_about' %}">About Us</a>
+		</div> 
+
+			<script>
+			(function(){
+			    var date_string = "{% now 'Y-m-d H:i:s' %}";
+			    var a = date_string.split(/[^0-9]/);
+			    for(i=0;i<6;i++){a[i]=parseInt(a[i])}
+			    window.date = new Date(a[0],a[1]-1,a[2],a[3],a[4],a[5]);
+			    window.monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+			    window.ordinalize = function (i) {
+			        var j = i % 10;
+			        if (j == 1 && i != 11) return i + "st";
+			        if (j == 2 && i != 12) return i + "nd";
+			        if (j == 3 && i != 13) return i + "rd";
+			        return i + "th";
+			    }
+			    window.num_padding = function(i) {
+			        return i < 10 ? "0" + i : i;
+			    }
+			    var timer = function() {
+			        window.date.setSeconds(window.date.getSeconds() + 1);
+			        str = window.ordinalize(window.date.getDate()) + " " + window.monthNames[window.date.getMonth()] + " " + window.date.getFullYear() + " " + window.date.toLocaleTimeString().toUpperCase();
+			        document.getElementById("timer").innerHTML = str;
+			    }
+			    setInterval(timer, 1000);
+			})();
+			</script>
+		
+		{% endblock %}
+	</div>
 </body>
 </html>

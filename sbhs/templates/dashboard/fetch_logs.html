@@ -1,0 +1,58 @@
+{% extends 'dashboard/dashboard_index.html' %}
+{% load staticfiles %}
+{% load custom_filter %}
+{% block title %}
+    Fetch Logs
+{% endblock %}
+{% block headerfiles %}
+	<script src = "{% static 'js/jquery.datetimepicker.full.min.js' %}"></script>
+	<script type="{% static 'js/jquery-ui.js' %}"></script>	
+	<link rel="stylesheet" type="text/css" href="{% static 'css/jquery.datetimepicker.css' %}">
+	<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.4.1/css/all.css" integrity="sha384-5sAR7xN1Nv6T6+dT2mhtzEpVJvfS3NScPQTrOxhwjIuvcA67KV2R5Jz6kr4abQsz" crossorigin="anonymous">
+
+{% endblock %}
+{% block main %}
+    <div>
+        <h4>Filter Log files</h4>
+  		<form class = "form-horizontal" action = "" method="POST" autocomplete="off"> 
+			<center>
+			<div class = "form-group">
+				{% csrf_token %}
+				{{form.as_p}}
+			<button class="btn btn-primary" type="submit" name='book_date' value='book_date'>Fetch</button><br/>
+			</div>
+			</center>
+					
+		</form>
+		<table class = "table table-border">
+			<thead>
+				<tr>
+					<th>Sl.No</th>
+					<th>User</th>
+					<th>Filename</th>
+				</tr>	
+			</thead>
+			<tbody>
+				{% for experiment in experiments %}
+				<tr>
+					<td>{{forloop.counter}}</td>
+					<td>{{experiment.slot.user.get_full_name}}</td>
+					<td><a href="{%url 'download_file' experiment.id %}">{{experiment.log}}</td>
+
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+    </div>
+    <script type="text/javascript">
+		var dateToday = new Date();
+		$(function(){
+			$(".datetimepicker").datetimepicker({
+				format:'Y-m-d',
+				maxDate: dateToday,
+				timepicker:false,
+			});
+		})
+	</script>
+{% endblock %}

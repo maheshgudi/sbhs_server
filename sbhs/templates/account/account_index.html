@@ -19,7 +19,9 @@
             <form action="{% url 'account_create' %}" method="POST">
                 {% csrf_token %}
                 {{registration_form.as_p}}
-
+                {% for field in registration_form %}
+                    
+                {% endfor %}
                 <input type="submit" class="btn btn-inverse" value="New User? Sign-Up">
             </form>
         </div>

@@ -14,7 +14,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="span8">
+        <div class="span8" id="info">
             <p style="text-align:justify">
                 Welcome to SBHS Virtual Labs. Here you can remotely access the Single Board Heater Systems (SBHS) hosted at IIT Bombay, and perform various experiments using it.
                 <br><br>
@@ -30,6 +30,32 @@
                     <li>Run the client application for establishing communication between server and your computer.</li>
                     <li>Launch Scilab, load the appropriate code and start experimenting remotely!</li>
                 </ol>
+        </div>
+        <div class="span12" id="theory">
+            <h2>Theory</h2>             
+            <br>
+        <br>
+        <iframe src="{% static 'data/theory.pdf' %}" width="100%" height="900px" ></iframe>
+            <br>
+        </div>
+        <div class="span12" id="procedure">
+            <h2>Procedure</h2>            
+                <h4>
+                    <strong>See the spoken tutorial on how to use SBHS virtual labs</strong>
+                </h4>
+                    <center>
+                        <div class="embed-responsive embed-responsive-16by9">
+                                <iframe width="500" height="300" src="https://www.youtube.com/embed/Ax7lYwQctog" frameborder="0" allowfullscreen></iframe>
+                        </div>                            
+                    </center><br>
+                        <h4>
+                            <strong>For more information please read the pdf</strong>
+                        </h4>
+                    <center>
+                        <div class="embed-responsive embed-responsive-16by9">
+                            <iframe src="{% static 'data/procedure.pdf' %}" width="100%" height="900px"></iframe><br>
+                        </div>
+                    </center> 
         </div>
     </div>
 </div>

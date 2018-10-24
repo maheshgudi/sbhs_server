@@ -4,24 +4,23 @@
 {% block content %}
 <div class="container">
     <div class="row">
-        {% if user.is_authenticated %}
-        {% include 'account/sub_nav.html' %}
-        {% endif %}
         <div class="span12">
-            <div class="page-header">
-                <div class="span1" style="margin-left: 0; margin-right: 20px;">
+                <div class="span1" style="margin-left: 0; margin-right: 50px; margin-bottom: 30px">
                     <img src="{% static 'img/iitbLogo.png' %}" alt="IITB">
                 </div>
-                <h1>About us</h1>
-                <p>SBHS Virtual Labs Team</p>
-            </div>
+                <div style="">
+                    <h1>About us</h1>
+                    <p>SBHS Virtual Labs Team</p>    
+                </div>
+                
+            
         </div>
         <div class="span2">
             <img src="{% static 'img/kannan.jpg' %}" alt="Prof. Kannan Moudgalya">
             <b>Principal Investigator</b><br>
             Prof. Kannan Moudgalya
         </div>
-        <div class="span10">
+        <div class="span9">
             <p style="text-align:justify">
                 Prof. Kannan M. Moudgalya received a B.Tech degree in chemical engineering from IIT Madras, a Master of Electrical Engineering from Rice University and a Ph.D (Chemical Engineering) degree, also from Rice University. He has been a professor at IIT Bombay for 22 years. He spent one year at the University of Alberta as a visiting professor.
                 <br><br>
@@ -36,25 +35,63 @@
         </div>
     </div>
     <div class="row">
-        <div class="span10 offset2">
-            <br>
-            <h3>SBHS Team</h3>
-            <ul>
-                <li>Inderpreet Arora</li>
-                <li>Rupak Rokade</li>
-                <li>Kaushik Venkata Belusonti</li>
-                <li>Prashant Shah</li>
-                <li>Victor Chakroborty</li>
-                <li>Shalini Shrivastava</li>
-                <li>Rakhi R</li>
-                <li>Sushant Poojary</li>
-                <li>Tanuj Bhojwani</li>
-                <li>Sitesh Patel</li>
-                <li>Ankit Bahuguna</li>
-                <li>Amol Mandhane</li>
-                <li>Akash Chavan</li>
-            </ul>
-        </div>
+        <table class = "table table-striped">
+            <thead>
+                <tr>
+                    <th>SBHS Team</th>
+                    <th>SBHS Web Team</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <ul>
+                            <li>Inderpreet Arora</li>
+                            <li>Rupak Rokade</li>
+                            <li>Kaushik Venkata Belusonti</li>
+                            <li>Prashant Shah</li>
+                            <li>Victor Chakroborty</li>
+                            <li>Shalini Shrivastava</li>
+                            <li>Rakhi R</li>
+                            <li>Sushant Poojary</li>
+                            <li>Tanuj Bhojwani</li>
+                            <li>Sitesh Patel</li>
+                            <li>Ankit Bahuguna</li>
+                        </ul>            
+                    </td>
+                    <td>
+                        <ul>
+                            <li>Amol Mandhane</li>
+                            <li>Mahesh Gudi</li>
+                            <li>Akash Chavan</li>
+                        </ul>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
     </div>
 </div>
+<footer class="footer" style="position: fixed; bottom: 0; right: 0; width: 100%; height: 60px;">
+    <div class="container">
+        <div class="navbar">
+        <ul class="nav navbar-nav navbar-right">
+            <li><a href="#"><b>External links</b></a></li>
+            <li><a href="http://www.iitb.ac.in/" target="_blank">IIT Bombay</a></li>
+            <li><a href="http://www.vlab.co.in/" target="_blank">Virtual Labs</a></li>
+            <li><a href="http://www.spoken-tutorial.org/" target="_blank">Spoken Tutorials</a></li>
+            <li><a href="http://www.co-learn.in/" target="_blank">Co-learn</a></li>
+            <li><a href="http://www.nex-robotics.com/" target="_blank">Nex Robotics</a></li>
+            <li><a href="http://sbhs.os-hardware.in/forum" target="_blank">SBHS Forum</a></li>
+            <li><a href="http://www.cdeep.iitb.ac.in/" target="_blank">CDEEP</a></li>
+        </ul>
+        </div>
+        
+     <p>Feedback / Contact Us</p> 
+        <p> 
+            <h5>Write a mail to <a href="mailto:sbhs@os-hardware.in">sbhs[at]os-hardware[dot]in</a> to provide a feedback on SBHS virtual lab experience. If you have any questions, please use the <a href="http://sbhs.os-hardware.in/forum" target="_blank">forum</a>.
+            </h5>
+        </p>
+    </div>
+</footer>
+
 {% endblock %}

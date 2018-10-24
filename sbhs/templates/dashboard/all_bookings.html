@@ -1,0 +1,53 @@
+{% extends 'dashboard/dashboard_index.html' %}
+{% block title %}
+    All Bookings
+{% endblock %}
+{% block main %}
+    <div>
+        <h4>All Bookings</h4>
+
+	{% if slots %}
+		<table class="table table-bordered">
+			<thead>
+				<tr>
+				<th>Date</th>
+				<th>Slot</th>
+				<th>Board</th>
+				<th>User</th>
+			</tr>	
+			</thead>
+			<tbody>
+				{% for slot in slots %}
+				<tr>
+				<td>{{slot.start_time|date:"d M Y"}}</td>
+				<td>{{slot.start_time|time:"H:i"}} to {{slot.end_time|time:"H:i"}}</td>
+				<td>{{slot.user.userboard_set.get.board.mid}}</td>
+				<td>{{slot.user}}</td>
+				</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+	{% else %}
+		<p>No slots have been booked. </p>
+	{% endif %}
+
+
+<center>
+<div class="pagination">
+    <span class="step-links">
+        {% if slots.has_previous %}
+            <a href="?page={{ slots.previous_page_number }}"class="btn btn-primary">< Previous</a>
+        {% endif %}
+
+        <span class="current">
+            Page {{ slots.number }} of {{ slots.paginator.num_pages }}
+        </span>
+
+        {% if slots.has_next %}
+            <a href="?page={{ slots.next_page_number }}" class="btn btn-primary">Next ></a>
+        {% endif %}
+    </span>
+</div>
+</center>
+</div>
+{% endblock %}
