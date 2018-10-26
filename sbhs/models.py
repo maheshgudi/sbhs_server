@@ -35,16 +35,15 @@ class Board(models.Model):
     usb_id = models.IntegerField(default="0")
     raspi_path = models.URLField(max_length=200, default="localhost:8000")
 
-    def save_board_details(self, raspi_ip, usb_mac_map):
-        for devices in usb_mac_map:
-            board = Board.objects.filter(mid=devices["sbhs_mac_id"])
+    def save_board_details(self, raspi_ip, device):
+            board = Board.objects.filter(mid=device["sbhs_mac_id"])
             if board.exists():
                 board = board.first()
             else:
                 board = self
-                board.mid = devices["sbhs_mac_id"] 
+                board.mid = device["sbhs_mac_id"]
             board.raspi_path = raspi_ip
-            board.usb_path = int(devices["usb_id"])
+            board.usb_path = int(device["usb_id"])
             board.online = True
             board.save()
 
@@ -53,7 +52,7 @@ class Board(models.Model):
         for board in all_boards:
             if board.mid not in online_mids: 
                 board.online = False
-            elif board.mid == online_mids:
+            elif board.mid in online_mids:
                 board.online = True
             board.save()
 
@@ -97,11 +96,15 @@ class Profile(models.Model):
 
 class SlotManager(models.Manager):
 
-    def get_current_slots(self, user):
+    def get_user_slots(self, user):
         now = timezone.now()
         slots = self.filter(user=user, start_time__lte=now, end_time__gt=now)
         return slots
 
+    def get_all_active_slots(self):
+        now = timezone.now()
+        slots = self.filter(start_time__lte=now, end_time__gt=now)
+        return slots
 
 class Slot(models.Model):
     user = models.ForeignKey(User)
@@ -123,6 +126,12 @@ class Experiment(models.Model):
     checksum = models.CharField(max_length=255, null=True, blank=True)
 
 
+    def __str__(self):
+        return '{0}: {1}'.format(self.user.username, self.board.mid)
+
 class UserBoard(models.Model):
     user = models.ForeignKey(User)
     board = models.ForeignKey(Board)
+
+    def __str__(self):
+        return '{0}: {1}'.format(self.user.username, self.board.mid)

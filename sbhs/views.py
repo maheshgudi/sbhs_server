@@ -350,13 +350,13 @@ def map_sbhs_to_rpi(client_ip):
             rpi_map = {}
             rpi_map["rpi_ip"] = r_pi
             mac_ids = connect_sbhs(r_pi, "get_machine_ids")
-            board = Board()
-            board.save_board_details(r_pi, mac_ids)
+            for devices in mac_ids: 
+                board = Board()
+                board.save_board_details(r_pi, devices)
             rpi_map["mac_ids"] = [i['sbhs_mac_id'] for i in mac_ids]
             map_machines.append(rpi_map)
     else:
         rpi_map = {}
-        client_name = client_ip + ":1234"
         rpi_map["rpi_ip"] = client_name
         mac_ids = connect_sbhs(client_name, "get_machine_ids")
         board = Board()
@@ -564,7 +564,6 @@ def profile(request, mid):
     else:
         try:
             filename = settings.SBHS_GLOBAL_LOG_DIR + "/" + str(mid) + ".log"
-            print(filename)
         except:
             raise Http404("Log does not exist for this profile.")
 
@@ -689,11 +688,15 @@ def test_boards(request):
         raise Http404("You are not allowed to see this page.")
     else:
         boards = Board.objects.filter(online=True)
-        slot_history = Slot.objects.all().order_by("-start_time")
         context["boards"] = boards
-        context["slot_history"] = slot_history[0]
         context["now"] = now
         return render(request,'dashboard/test_boards.html',context)
+
+def user_exists(username):
+    try:
+        user = User.objects.get(username=username)
+    except:
+        Http404("User by username: {} does not exists".format(username))
 
 @login_required
 def update_mid(request):
@@ -701,7 +704,32 @@ def update_mid(request):
     if not is_moderator(user):
         raise Http404("You are not allowed to see this page.")
     else:
-        return render(request,'dashboard/update_mid.html')
+        try:
+            username = request.POST.get("username")
+            board_id = request.POST.get("board_id")
+        except:
+            raise Http404("Invalid Parameters")
+        user = user_exists(username)
+        if user is not None:
+            # board = user.userboard_set.all()
+            # board.mid = board_id
+            # board.save()
+
+            return messages.success("Mid updated successfully")
+        else:
+            raise Http404("Username: {} does not exists".format(username))
+
+    return redirect(reverse('get_allocated_mids'))
+
+@login_required
+def get_allocated_mids(request):
+    user = request.user
+    context = {}
+    if not is_moderator(user):
+        raise Http404("You are not allowed to see this page.")
+    else:
+        pass
+        return render(request, 'dashboard/update_mid.html',context)
 
 @login_required
 def fetch_logs(request):
@@ -764,327 +792,3 @@ def book_all_suser_slots(request):
         raise Http404("You are not allowed to see this page.")
     else:
         return HttpResponseRedirect(reverse('moderator_dashboard')) 
-
-
-# @login_required
-# def index(req):
-#     user = request.user
-#     if not is_moderator(user):
-#         raise Http404("You are not allowed to see this page!")
-#     boards = Board.objects.order_by('-online').all()
-#     allotment_mode = "Random" if Board.can_do_random_allotment() else "Workshop"
-#     return render(req, 'admin/index.html', {"boards": boards, "allotment_mode": allotment_mode})
-
-# @login_required
-# def toggle_allotment_mode(req):
-#     checkadmin(req)
-#     Board.toggle_random_allotment()
-#     return redirect(index)
-
-# @login_required(redirect_field_name=None)
-# def booking_index(req):
-#     bookings = Booking.objects.order_by('-booking_date','-slot_id').filter(trashed_at__isnull=True).select_related()[:50]
-#     return render(req, 'admin/booking_index.html', {"bookings": bookings})
-
-# @login_required(redirect_field_name=None)
-# def webcam_index(req):
-#     checkadmin(req)
-#     boards = Board.objects.filter(online=True)
-#     for board in boards:
-#         Webcam.load_image(board.mid)
-#     return render(req, 'admin/webcam_index.html', {"boards": boards})
-
-# @login_required(redirect_field_name=None)
-# def logs_index(req):
-#     checkadmin(req)
-#     date = (datetime.datetime.now()).strftime("%Y-%m-%d")
-#     return render(req, 'admin/user_logs.html', {"nowdate" : date})
-
-# @login_required(redirect_field_name=None)
-# def profile(req, mid):
-#     checkadmin(req)
-#     try:
-#         filename = settings.SBHS_GLOBAL_LOG_DIR + "/" + mid + ".log"
-#         f = open(filename, "r")
-#         f.close()
-#     except:
-#         raise Http404
-
-#     delta_T = 1000
-#     data = subprocess.check_output("tail -n %d %s" % (delta_T, filename), shell=True)
-#     data = data.split("\n")
-#     plot = []
-#     heatcsv = ""
-#     fancsv = ""
-#     tempcsv = ""
-
-#     for t in xrange(len(data)):
-#         line = data[t]
-#         entry = line.strip().split(" ")
-#         try:
-#             plot.append([int(i) for i in entry[0:-1] + [float(entry[-1])]])
-#             heatcsv += "%d,%s\\n" % (t+1, entry[1])
-#             fancsv += "%d,%s\\n" % (t+1, entry[2])
-#             tempcsv += "%d,%s\\n" % (t+1, entry[3])
-#         except:
-#             continue
-
-#     plot = zip(*plot) # transpose
-
-#     return render(req, "admin/profile.html", {
-#         "mid": mid,
-#         "delta_T": delta_T,
-#         "heat": heatcsv,
-#         "fan": fancsv,
-#         "temp": tempcsv
-#     })
-
-# @login_required(redirect_field_name=None)
-# def testing(req):
-#     checkadmin(req)
-#     now = datetime.datetime.now()
-#     current_slot_id = Slot.objects.filter(start_hour=now.hour,
-#                                             start_minute__lt=now.minute,
-#                                             end_minute__gt=now.minute)
-
-#     current_slot_id = -1 if not current_slot_id else current_slot_id[0].id
-
-#     current_bookings = Booking.objects.filter(slot_id=current_slot_id,
-#                                                 booking_date=datetime.date.today()).select_related()
-#     current_mids = list([-1]) if not current_bookings else [current_booking.account.board.mid for current_booking in current_bookings]
-
-#     boards = Board.objects.filter(online=1)
-#     allotment_mode = "Random" if Board.can_do_random_allotment() else "Workshop"
-#     return render(req, 'admin/testexp.html', {"boards": boards, "allotment_mode": allotment_mode, "mids": current_mids})
-
-# @csrf_exempt
-# def monitor_experiment(req):
-#     checkadmin(req)
-#     try:
-#         mid = int(req.POST.get("mid"))
-#     except Exception as e:
-#         return HttpResponse(json.dumps({"status_code":400, "message":"Invalid parameters"}), content_type="application/json")
-#     try:
-#         ip = settings.pi_ip_map.get(str(mid))
-#         if ip is None:
-#             return HttpResponse(json.dumps({"status_code":400, "message":"Board is offline"}), content_type="application/json")
-#         url = "http://" + str(ip) + "/pi/admin/monitor"
-#         payload = {"mid":mid}
-#         r = requests.post(url , data = payload)
-        
-#         return HttpResponse(r.text, content_type="application/json")
-#     except Exception as e:
-#         retVal={"status_code":500,"message":"Could not fetch device logs.."}
-#         return HttpResponse(json.dumps(retVal),content_type='application/json')
-
-# @login_required(redirect_field_name=None)
-# def get_allocated_mids(req):
-#     checkadmin(req)
-#     with connection.cursor() as cursor:
-#         cursor.execute("SELECT tables_board.mid, COUNT(tables_account.id), tables_board.id FROM tables_account RIGHT OUTER JOIN tables_board ON tables_account.board_id = tables_board.id WHERE tables_board.online = 1 GROUP BY tables_board.mid ORDER BY COUNT(tables_account.id)")
-#         mid_count = cursor.fetchall()
-
-#     return render(req, 'admin/changeMID.html', {"mid_count" : mid_count})
-
-# @csrf_exempt
-# def get_users(req):
-#     checkadmin(req)
-#     try:
-#         users = list(Account.objects.select_related().values_list("username", "board__mid"))
-#         return HttpResponse(json.dumps({"status_code":200, "message":users}), content_type="application/json")
-#     except Exception as e:
-#         return HttpResponse(json.dumps({"status_code":500, "message":str(e)}), content_type="application/json")
-
-
-# @csrf_exempt
-# def toggle_device_status(req):
-#     checkadmin(req)
-
-#     try : 
-#         mid = req.POST.get('mid')
-#     except Exception as e:
-#         return HttpResponse(json.dumps({"status_code":400, "message":"Invalid parameters"}), content_type="application/json")
-
-#     try:
-#         now = datetime.datetime.now()
-#         current_slot_id = Slot.objects.filter(start_hour=now.hour,
-#                                                 start_minute__lt=now.minute,
-#                                                 end_minute__gt=now.minute)
-
-#         current_slot_id = -1 if not current_slot_id else current_slot_id[0].id
-
-#         current_bookings = Booking.objects.filter(slot_id=current_slot_id,
-#                                                     booking_date=datetime.date.today()).select_related()
-#         current_mids = list([-1]) if not current_bookings else [current_booking.account.board.mid for current_booking in current_bookings]
-#     except Exception as e:
-#         return HttpResponse(json.dumps({"status_code":400, "message":"Unsuccessful"}), content_type="application/json")
-
-#     if int(mid) in current_mids:
-#         return HttpResponse(json.dumps({"status_code":400, "message":"Board is in use."}), content_type="application/json")
-
-#     try:
-#         brd = Board.objects.get(mid = mid)
-#         brd.temp_offline = not brd.temp_offline
-#         brd.save()
-
-#         return HttpResponse(json.dumps({"status_code":200, "message":"Toggle successful"}), content_type="application/json")
-#     except Exception as e:
-#         return HttpResponse(json.dumps({"status_code":500, "message":"Unsuccessful"}), content_type="application/json")
-
-
-# def user_exists(username):
-#     try:
-#         user = Account.objects.get(username=username)
-#     except ObjectDoesNotExist:
-#         return None
-#     return user
-
-# @csrf_exempt
-# def update_allocated_mid(req):
-#     checkadmin(req)
-#     try:
-#         username = req.POST.get("username")
-#         board_id = req.POST.get("board_id")
-#     except Exception as e:
-#         return HttpResponse(json.dumps({"status_code":400, "message":"Invalid parameters"}), content_type="application/json")
-
-#     user = user_exists(username)
-#     if user is not None:
-#         user.board_id = board_id
-#         user.save()
-#     else:
-#         return HttpResponse(json.dumps({"status_code": 400, "message": "Username does not exist"}), content_type="application/json")
-
-#     return HttpResponse(json.dumps({"status_code": 200, "message": "MID changed successfully"}), content_type="application/json")
-
-# @login_required(redirect_field_name=None)
-# def download_log(req, mid):
-#     checkadmin(req)
-#     try:
-#         global_logfile = settings.SBHS_GLOBAL_LOG_DIR + "/" + mid + ".log"
-#         f = open(global_logfile, "r")
-#         data = f.read()
-#         f.close()
-#         return HttpResponse(data, content_type='text/text')
-#     except:
-#         return HttpResponse("Requested log file doesn't exist.Please Try in the next hour after your slot ends.")
-
-# @login_required(redirect_field_name=None)
-# @csrf_exempt
-# def range_logs(req):
-#     checkadmin(req)
-#     try:
-#         start_date = req.POST.get("start_date")
-#         end_date = req.POST.get("end_date")
-#         start_time = req.POST.get("start_time")
-#         end_time = req.POST.get("end_time")
-#     except:
-#         return HttpResponse(json.dumps({"status_code":400, "message":"Invalid parameters"}), content_type="application/json")
-
-#     try:
-#         start = start_date + " " + start_time
-#         end = end_date + " " + end_time
-#         log_files = Experiment.objects.filter(created_at__range=[start, end]).values("id", "log")
-
-#         return HttpResponse(json.dumps({"status_code":200, "message":list(log_files)}), content_type="application/json")
-#     except Exception as e:
-#         return HttpResponse(json.dumps({"status_code": 500, "message": "Some error occured" + str(e)}), content_type="application/json")
-
-# @login_required(redirect_field_name=None)
-# @csrf_exempt
-# def download_experiment_log(req, experiment_id):
-#     """ Downloads the experimental log file.
-#         Input: req: request object, experiment_id: experimental id
-#         Output: HttpResponse object
-#     """
-#     checkadmin(req)
-#     try:
-#         experiment_data = Experiment.objects.select_related("booking", "booking__account").get(id=experiment_id)
-#         f = open(os.path.join(settings.EXPERIMENT_LOGS_DIR, experiment_data.log), "r")
-#         data = f.read()
-#         f.close()
-#         return HttpResponse(data, content_type='text/text')
-#     except:
-#         return HttpResponse("Requested log file doesn't exist.")
-
-# @csrf_exempt
-# def reset_device(req):
-#     """Resets the device to fan = 100 and heat = 0
-#         Takes mid as paramter 
-#         Returns status_code = 200, data={temp:temp of the device} if succesful
-#                 else 
-#                 status_code = 500 , data={error:errorMessage}
-#     """ 
-#     checkadmin(req)
-#     mid=int(req.POST.get('mid'))
-
-#     try:
-#         ip = settings.pi_ip_map.get(str(mid))
-#         if ip is None:
-#             return HttpResponse(json.dumps({"status_code":400, "message":"Board is offline"}), content_type="application/json")
-#         url = "http://" + str(ip) + "/pi/admin/resetdevice"
-#         payload = {"mid":mid}
-#         r = requests.post(url , data = payload)
-        
-#         return HttpResponse(r.text, content_type="application/json")
-#     except Exception as e:
-#         retVal={"status_code":500,"message":"Could not reset the device.."}
-#         return HttpResponse(json.dumps(retVal),content_type='application/json')
-
-
-# @csrf_exempt
-# def set_device_params(req):
-#     """Sets the device parameters as per the arguments sent
-#         Takes mid,fan,heat as paramter 
-#         Returns status_code = 200, data={temp:temp of the device} if succesful
-#                 else 
-#                 status_code = 500 , data={error:errorMessage}
-#     """ 
-#     checkadmin(req)
-#     mid=int(req.POST.get('mid'))
-#     fan=int(req.POST.get('fan'))
-#     heat=int(req.POST.get('heat'))
-#     try:
-#         ip = "192.168.1.141"
-#         # ip = settings.pi_ip_map.get(str(mid))
-#         # if ip is None:
-#         #     return HttpResponse(json.dumps({"status_code":400, "message":"Board is offline"}), content_type="application/json")
-#         # url = "http://" + str(ip) + "/pi/admin/setdevice"
-#         # payload = {"mid":mid, "fan":fan, "heat":heat}
-#         # r = requests.post(url , data = payload)
-#         s = Sbhs()
-#         fan = s.setFan(ip,fan)
-#         heat = s.setHeat(ip,heat)
-#         payload = {"ip":ip,"fan":fan,"heat":heat}
-#         # return HttpResponse(r.text, content_type="application/json")
-#         return HttpResponse(payload,content_type="application/json")
-#     except Exception as e:
-#         retVal={"status_code":500,"message":"Could not set the device params.."}
-#         return HttpResponse(json.dumps(retVal),content_type='application/json')
-
-# @csrf_exempt
-# def get_device_temp(req):
-#     """Sets the device parameters as per the arguments sent
-#         Takes mid,fan,heat as paramter 
-#         Returns status_code = 200, data={temp:temp of the device} if succesful
-#                 else 
-#                 status_code = 500 , data={error:errorMessage}
-#     """ 
-#     checkadmin(req)
-#     # mid=int(req.POST.get('mid'))
-#     try:
-#     #     ip = settings.pi_ip_map.get(str(mid))
-#     #     if ip is None:
-#     #         return HttpResponse(json.dumps({"status_code":400, "message":"Board is offline"}), content_type="application/json")
-#     #     url = "http://" + str(ip) + "/pi/admin/gettemp"
-#     #     payload = {"mid":mid}
-#     #     r = requests.post(url , data = payload)
-#         ip = "192.168.1.141"
-#         s = Sbhs()
-#         contents = s.getTemp(ip)
-#         print("contents: {}".format(contents))
-#         # return HttpResponse(r.text, content_type="application/json")
-#         return HttpResponse(json.dumps({"status_code": 200,"contents":contents}),content_type="application/json")
-#     except Exception as e:
-#         retVal={"status_code":500,"message":"Could not get the device temperature.."+str(e)}
-#         return HttpResponse(json.dumps(retVal),content_type='application/json')
