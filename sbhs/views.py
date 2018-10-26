@@ -227,38 +227,50 @@ def update_email(request):
 @email_verified
 def slot_new(request):
     user = request.user
-    slot_history = Slot.objects.filter(user=user).order_by("-start_time")
+    slot_history = Slot.objects.filter(user=user).order_by("-start_time") 
     context = {}
     now = timezone.now()
+    today = now.today()
+    todays_slots = slot_history.filter(start_time__date=today)
+    current_slot = slot_history.filter(start_time__lt=now, end_time__gte=now)
     if not request.user.is_authenticated():
         return redirect('account_enter')
     
     if request.method == 'POST':
-        if request.POST.get('delete') == "delete":
-            slots = request.POST.getlist("slots")
-            Slot.objects.filter(id__in=slots).delete()
-        if request.POST.get("book_date") == "book_date":
-            form = SlotCreationForm(request.POST)
-            if form.is_valid():
-                new_slot = form.save(commit=False)
-                if new_slot.start_time >= now:
-                    new_slot.end_time = new_slot.start_time + timedelta(
-                                         minutes=settings.SLOT_DURATION
-                                         )
-                    new_slot.user = user            
-                    new_slot.save()
+        if len(todays_slots) >= settings.LIMIT:
+            messages.warning(request,'Cannot Book more than {0} slots in advance in a day'\
+                        .format(settings.LIMIT))
+        else:
+            if request.POST.get('delete') == "delete":
+                slots = request.POST.getlist("slots")
+                Slot.objects.filter(id__in=slots).delete()
+            if request.POST.get("book_date") == "book_date":
+                form = SlotCreationForm(request.POST)
+                if form.is_valid():
+                    new_slot = form.save(commit=False)
+                    if new_slot.start_time >= now:
+                        new_slot.end_time = new_slot.start_time + timedelta(
+                                             minutes=settings.SLOT_DURATION
+                                             )
+                        new_slot.user = user            
+                        new_slot.save()
+                        messages.success(request,'Slot created successfully.')
+                    else:
+                        messages.error(request,
+                                         'Start time selected'
+                                         + ' is before today.'
+                                         + 'Please choose again.'
+                                        )
+            if request.POST.get("book_now") == "book_now":
+                if not current_slot:
+                    slot_now = Slot.objects.create(
+                                user=user, start_time=now,
+                                end_time=now+timedelta(minutes=55)
+                                )
                     messages.success(request,'Slot created successfully.')
                 else:
-                    messages.error(request,
-                                     'Start time selected'
-                                     + ' is before today.'
-                                     + 'Please choose again.'
-                                    )
-        if request.POST.get("book_now") == "book_now":
-            slot_now = Slot.objects.create(user=user, start_time=now,
-                                           end_time=now+timedelta(minutes=55)
-                                           )
-            messages.success(request,'Slot created successfully.')
+                    messages.warning(request,'Slot is already booked for \
+                                    current time. Please select future slot.')
         return redirect("slot_new")
 
     else:
@@ -287,7 +299,7 @@ def initiation(request):
     if user:
         if user.is_active:
             now = timezone.now()
-            slots = Slot.objects.get_current_slots(user).order_by("id")
+            slots = Slot.objects.get_user_slots(user).order_by("id")
             slot = slots.last()
             board = UserBoard.objects.get(user=user).board
             check_status_path = "reset/{0}".format(board.usb_id)
@@ -379,7 +391,7 @@ def experiment(request):
         username = request.POST.get("username") 
         server_start_ts = int(time.time() * 1000)
         user = User.objects.get(username=username)
-        slot = Slot.objects.get_current_slots(user)\
+        slot = Slot.objects.get_user_slots(user)\
                             .order_by("start_time").last()
         board = UserBoard.objects.get(user=user).board
         experiment = Experiment.objects.filter(slot=slot)
@@ -457,7 +469,8 @@ def logs(request):
     context = {}
     all_bookings = Slot.objects.filter(user__username=user)
     all_booking_ids = [booking.id for booking in all_bookings]
-    experiment = Experiment.objects.select_related("slot").filter(slot_id__in=all_booking_ids)
+    experiment = Experiment.objects.select_related("slot")\
+                    .filter(slot_id__in=all_booking_ids)
     for exp in experiment:
         exp.logname = exp.log.split("/")[-1]
         context['exp.logname'] = exp.logname 
@@ -688,7 +701,9 @@ def test_boards(request):
         raise Http404("You are not allowed to see this page.")
     else:
         boards = Board.objects.filter(online=True)
+        slot_history = Slot.objects.all().order_by("-start_time")
         context["boards"] = boards
+        context["slot_history"] = slot_history[0]
         context["now"] = now
         return render(request,'dashboard/test_boards.html',context)
 
@@ -759,15 +774,18 @@ def fetch_logs(request):
     return render(request,'dashboard/fetch_logs.html',context)
 
 def download_file(request, experiment_id):
-    experiment = Experiment.objects.get(id=experiment_id)
-    response = HttpResponse(content_type='application/text')
-    response['Content-Disposition'] = 'attachment; filename={0}'.format(
-                                        experiment.log
-                                            )
-    response.write(open("{0}/{1}".format(settings.MEDIA_ROOT,
-                                         experiment.log)
-                   ).read())
-    return response
+    try:
+        experiment = Experiment.objects.get(id=experiment_id)
+        response = HttpResponse(content_type='application/text')
+        response['Content-Disposition'] = 'attachment; filename={0}'.format(
+                                            experiment.log
+                                                )
+        response.write(open("{0}/{1}".format(settings.MEDIA_ROOT,
+                                             experiment.log)
+                       ).read())
+        return response
+    except FileNotFoundError as fnfe:
+        raise fnfe
 
 @login_required
 def turn_on_all_boards(request):
