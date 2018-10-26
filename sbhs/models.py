@@ -125,9 +125,9 @@ class Experiment(models.Model):
     log = models.CharField(max_length=255)
     checksum = models.CharField(max_length=255, null=True, blank=True)
 
-
     def __str__(self):
-        return '{0}: {1}'.format(self.user.username, self.board.mid)
+        return '{0}: {1}'.format(self.slot.user, self.slot)
+
 
 class UserBoard(models.Model):
     user = models.ForeignKey(User)
