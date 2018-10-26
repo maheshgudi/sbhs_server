@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load crispy_forms_tags %}
 {% block content %}
 <div class="container">
     <div class="row">
@@ -8,9 +8,9 @@
             <br>
             <form action="{% url 'account_login' %}" method="POST">
                 {% csrf_token %}
-                {{login_form.as_p}}
-
-                <input type="submit" class="btn btn-primary" value="Login">
+                {{login_form|crispy}}
+                <br>
+                <input type="submit" class="btn btn-inverse" value="Login">
                 &nbsp;&nbsp;<a href="{% url "password_reset" %}">Forgot Password?</a>
             </form>
         </div>
@@ -18,10 +18,8 @@
             <h2>Create Account</h2>
             <form action="{% url 'account_create' %}" method="POST">
                 {% csrf_token %}
-                {{registration_form.as_p}}
-                {% for field in registration_form %}
-                    
-                {% endfor %}
+                {{registration_form|crispy}}
+
                 <input type="submit" class="btn btn-inverse" value="New User? Sign-Up">
             </form>
         </div>

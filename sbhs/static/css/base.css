@@ -1,5 +1,6 @@
 .content { 
     padding-top: 65px; 
+    padding-bottom: 100px;
 }
 .footer{
 	position: fixed;
@@ -12,18 +13,23 @@
 	box-sizing: border-box;
 	width: 100%;
 	font: bold 12px;
-	overflow: auto;
-	clear:both;
-	padding-top: 2px;
-	height: 10%;
+}
+html, body{
+	margin:0;
+	padding:0;
+	height:100%;
 }
 
-html, body{
-	font-size:10px;
-	overflow:auto;
-	height:100%;
-	overflow-x:hidden;
-	text-align:center;
-	width:1024px;
-	margin: 0px auto 0px auto;
+#container{
+	min-height: 100%;
+	position: relative;
+}
+
+#header{
+
+}
+
+#body{
+	padding: 10px;
+	padding-bottom: 60px: 
 }
