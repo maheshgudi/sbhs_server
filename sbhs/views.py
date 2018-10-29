@@ -482,7 +482,7 @@ def map_sbhs_to_rpi(client_name):
                     board = Board()
                     board.save_board_details(r_pi, devices)
                 rpi_map["mac_ids"] = [i['sbhs_mac_id'] for i in mac_ids]
-                map_machines.append(rpi_map)
+                map_machines.append(rpi_map.copy())
             except:
                 dead_machines.append(r_pi)
     rpi_map["rpi_ip"] = client_name
@@ -787,19 +787,20 @@ def test_boards(request):
     user = request.user
     now = timezone.now()
     context = {}
+    dead_servers = []
     if not is_moderator(user):
         raise Http404("You are not allowed to see this page.")
     else:
-        board_check, dead_servers = map_sbhs_to_rpi(
-                                    request.META["SERVER_NAME"]
-                                    )
-        board = Board()
-        all_mac_ids = []
-        for machines in board_check:
-            all_mac_ids.extend(machines["mac_ids"])
-        board.switch_off_inactive_boards(all_mac_ids)
-        boards = Board.objects.filter(online=True)
-        all_devices = []
+        if request.POST.get("update_boards") == "update_boards":
+            board_check, dead_servers = map_sbhs_to_rpi(
+                                        request.META["SERVER_NAME"]
+                                        )
+            board = Board()
+            all_mac_ids = []
+            for machines in board_check:
+                all_mac_ids.extend(machines["mac_ids"])
+            board.switch_off_inactive_boards(all_mac_ids)
+
         if request.POST.get("reset_all") == "reset_all":
             for board in boards:
                 resp = connect_sbhs(board.raspi_path,"reset/{0}".format(
@@ -807,6 +808,8 @@ def test_boards(request):
                                       )
                                       )
 
+        boards = Board.objects.filter(online=True)
+        all_devices = []
         for device in boards:
             devices = {}
             temp = connect_sbhs(device.raspi_path,
@@ -816,7 +819,8 @@ def test_boards(request):
             devices["temp"] = temp
             all_devices.append(devices)
         context["all_devices"] = all_devices
-        context["dead_servers"] = dead_servers
+        if dead_servers:
+            context["dead_servers"] = dead_servers
         return render(request,'dashboard/test_boards.html',context)
 
 def user_exists(username):

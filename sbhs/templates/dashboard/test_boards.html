@@ -22,7 +22,6 @@
 				These SBHS servers did not respond - <br/>
 				<strong>{{dead_servers|join:", "}}</strong>
 			</div>
-
 			{% endif %}
 			<table class = "table table-striped" id = "tableId">
 				<thead>
@@ -58,8 +57,11 @@
 			</table>
 			<br/><br/>
 			<form class = "form-horizontal" action = "" method="POST" autocomplete="off"> 
-				{% csrf_token %}	
-				<center><button class = "btn btn-primary" name="reset_all" value="reset_all">Reset all boards</button></center>
+				{% csrf_token %}
+				<span>
+				<center><button class = "btn btn-primary" name="update_boards" value="update_boards">Update all boards</button>
+				<button class = "btn btn-primary" name="reset_all" value="reset_all">Reset all boards</button></center>
+				</span>
 			</form>
 		</div>
 
