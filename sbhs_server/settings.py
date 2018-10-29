@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 
 import os
-import sbhs_server.secret as credentials
+from sbhs_server import credentials
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -78,13 +78,24 @@ WSGI_APPLICATION = 'sbhs_server.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
-DATABASES = {
-    'default': {
+if not IS_DEVELOPMENT:
+    DATABASES = {
+            'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': credentials.DB_NAME,
+            'USER': credentials.DB_USER,
+            'PASSWORD': credentials.DB_PASS,
+            'HOST': credentials.DB_HOST,
+            'PORT': credentials.DB_PORT,
+        }
+       }
+else:
+    DATABASES = {
+        'default': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
-
+         }
+       }
 
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
@@ -149,19 +160,19 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 # This email id will be used as <from address> for sending emails.
 # For example no_reply@<your_organization>.in can be used.
-SENDER_EMAIL = 'Write Sender Email ID'
+SENDER_EMAIL = credentials.SENDER_EMAIL
 
 # Organisation/Indivudual Name.
 SENDER_NAME = 'SBHS Team'
 
 # This email id will be used by users to send their queries
 # For example queries@<your_organization>.in can be used.
-REPLY_EMAIL = 'Write Reply-to Email ID'
+REPLY_EMAIL = credentials.REPLY_EMAIL
 
 # This url will be used in email verification to create activation link.
 # Add your hosted url to this variable.
 # For example https://127.0.0.1:8000 or 127.0.0.1:8000
-PRODUCTION_URL = '127.0.0.1:8000'
+PRODUCTION_URL = credentials.PRODUCTION_URL
 
 # Set this variable to <False> once the project is in production.
 # If this variable is kept <True> in production, email will not be verified.

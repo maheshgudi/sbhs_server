@@ -46,7 +46,5 @@ wsgi.log
 *.sqlite3
 data/
 _build/
-sbhs_server/secret.py
-sbhs_server/credentials.py
 *.log
 experiments
