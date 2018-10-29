@@ -26,11 +26,7 @@ SECRET_KEY = credentials.PROJECT_SECRET_KEY
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = [
-    '10.119.31.68',
-    'localhost',
-    '127.0.0.1'
-]
+ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -44,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'widget_tweaks',
+    'crispy_forms',
 ]
 
 MIDDLEWARE = [
@@ -127,14 +124,15 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-SLOT_DURATION = 55
+SLOT_DURATION = 59
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'experiments/')
 
 EMAIL_USE_TLS = True
 
-EMAIL_HOST = 'smtp-auth.iitb.ac.in'
+EMAIL_HOST = 'Write SMTP Server Email ID'
 
 EMAIL_PORT = 25
 
@@ -151,29 +149,28 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
 # This email id will be used as <from address> for sending emails.
 # For example no_reply@<your_organization>.in can be used.
-SENDER_EMAIL = 'iakashchavan@gmail.com'
+SENDER_EMAIL = 'Write Sender Email ID'
 
 # Organisation/Indivudual Name.
 SENDER_NAME = 'SBHS Team'
 
 # This email id will be used by users to send their queries
 # For example queries@<your_organization>.in can be used.
-REPLY_EMAIL = 'mahesh_gudi@iitb.ac.in'
+REPLY_EMAIL = 'Write Reply-to Email ID'
 
 # This url will be used in email verification to create activation link.
 # Add your hosted url to this variable.
 # For example https://127.0.0.1:8000 or 127.0.0.1:8000
 PRODUCTION_URL = '127.0.0.1:8000'
 
-
 # Set this variable to <False> once the project is in production.
 # If this variable is kept <True> in production, email will not be verified.
-IS_DEVELOPMENT=False
+IS_DEVELOPMENT=True
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 RASP_PI_IPS = [] 
-# RASP_PI_IPS = ['10.101.202.74:1234'] 
+ 
 # enter comma separated raspberry pi IPs here with ports
 # for e.g 127.0.0.1:1234
 
@@ -185,7 +182,3 @@ EXPERIMENT_LOGS_DIR = os.path.join(BASE_DIR, 'experiments')
 
 SBHS_GLOBAL_LOG_DIR = os.path.join(BASE_DIR, 'log')
 # Path for sbhs global log directory on Django server.
-
-SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-CSRF_COOKIE_NAME = "pfesgbxra"
-SESSION_COOKIE_NAME = "frffvbaVq"

@@ -1,5 +1,6 @@
 from django import template
 from django.template.defaultfilters import stringfilter
+from sbhs.models import Slot
 
 register = template.Library()
 
@@ -16,10 +17,9 @@ def compare_slot_time(start_time, end_time, now):
 
 
 @register.simple_tag
-def vacant_slot(start_time, end_time, now):
-    slot = "vacant"
-    if start_time <= now <= end_time:
-    	slot ="occupied"
-    elif start_time >= now:
-    	slot ="vacant"
-    return slot
+def check_board_occupancy(mid):
+    slot = Slot.objects.get_active_slot_for_board(mid)
+    if slot:
+        return True
+    else:
+        return False

@@ -1,9 +1,17 @@
 {% extends 'dashboard/dashboard_index.html' %}
+{% load crispy_forms_tags %}
 {% block title %}
     Update MID
 {% endblock %}
 {% block main %}
-    <div>
-        <h4>Update MID</h4>
+    <div class = "container">
+    	<div class = "row">
+            <form class = "form-horizontal" action = "" method="POST" autocomplete="off"> 
+                {% csrf_token %}
+        		{{form | crispy}}
+            	<br>
+				<button class="btn btn-primary" type="submit" name='update_mid' value='update_mid'>Update Mid</button><br/>
+			</form>
+    	</div>
     </div>
 {% endblock %}

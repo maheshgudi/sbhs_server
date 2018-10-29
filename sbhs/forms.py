@@ -5,12 +5,12 @@ except ImportError:
 from string import digits, punctuation
 
 from django import forms
-from django.conf import settings
+from sbhs_server import settings
 from django.utils import timezone
 from django.contrib.auth.models import User
 
 
-from .models import Profile, Slot
+from .models import Profile, Slot, UserBoard
 from .send_emails import generate_activation_key
 
 UNAME_CHARS = letters + "._" + digits
@@ -135,3 +135,16 @@ class FilterLogsForm(forms.ModelForm):
 					'readonly':'readonly'
 				}),
 		}
+
+class UserBoardForm(forms.ModelForm):
+	def save(self):
+		user = self.cleaned_data["user"]
+		board = self.cleaned_data["board"]
+		user_board = UserBoard.objects.get(user=user)
+		user_board.board = board
+		user_board.save()
+
+
+	class Meta:
+		model = UserBoard
+		fields = ["user", "board"]

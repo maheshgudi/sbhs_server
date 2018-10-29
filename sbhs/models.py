@@ -43,7 +43,7 @@ class Board(models.Model):
                 board = self
                 board.mid = device["sbhs_mac_id"]
             board.raspi_path = raspi_ip
-            board.usb_path = int(device["usb_id"])
+            board.usb_id = int(device["usb_id"])
             board.online = True
             board.save()
 
@@ -60,7 +60,11 @@ class Board(models.Model):
         ordering = ['mid',]
 
     def __str__(self):
-        return '{}: {}'.format(self.mid, self.online)
+        return 'MID: {0} Online: {1}: User Count: {2}'.format(
+                                    self.mid,
+                                    self.online,
+                                    self.userboard_set.all().count()
+                                    )
 
 class Profile(models.Model):
     """
@@ -97,13 +101,35 @@ class Profile(models.Model):
 class SlotManager(models.Manager):
 
     def get_user_slots(self, user):
-        now = timezone.now()
+        now = timezone.localtime()
         slots = self.filter(user=user, start_time__lte=now, end_time__gt=now)
         return slots
 
     def get_all_active_slots(self):
-        now = timezone.now()
+        now = timezone.localtime()
         slots = self.filter(start_time__lte=now, end_time__gt=now)
+        return slots
+
+    def check_booked_slots(self, start_time, users):
+        return self.filter(start_time__lte=start_time,
+                           end_time__gt = start_time,
+                           user__in=users
+                           ).count() == 0
+    def get_active_slot_for_board(self, mid):
+        now = timezone.localtime()
+        users = [userboard.user.id for userboard in
+                 UserBoard.objects.filter(board__mid=mid)
+                 ]
+        slots = self.filter(user__in=users, start_time__lte=now,
+                            end_time__gt=now)
+        return slots
+
+    def board_all_booked_slots(self,mid):
+        now = timezone.localtime()
+        users = [userboard.user.id for userboard in UserBoard.objects.filter(
+                 board__mid=mid)
+                ]
+        slots = self.filter(user__in=users,start_time__gte=now)
         return slots
 
 class Slot(models.Model):
@@ -133,5 +159,20 @@ class UserBoard(models.Model):
     user = models.ForeignKey(User)
     board = models.ForeignKey(Board)
 
+    def get_all_users_for_board(self):
+        now = timezone.now()
+        users = UserBoard.objects.filter(board=self.board)
+        return users
+
     def __str__(self):
         return '{0}: {1}'.format(self.user.username, self.board.mid)
+
+class Webcam():
+
+    def __init__(self):
+        pass
+
+    def load_image(className,mid):
+        command = "timeout 2s streamer -q -f jpeg -c /dev/video" + '0'+str(mid)
+        command += " -o " + settings.WEBCAM_DIR + "image" + '0'+str(mid) + ".jpeg"
+        os.system(command)

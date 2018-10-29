@@ -8,7 +8,6 @@
         <script src="{% static 'js/jquery-ui.js' %}"></script> 
         <link rel="stylesheet" type="text/css" href="{% static 'css/jquery.datetimepicker.css' %}"/>
         <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}"/>
-        <script type="text/javascript" src = "https://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
 {% endblock %}
 {% block content %}
 <br>
@@ -35,15 +34,6 @@
             </li>
             <li>
                 <a href="{% url 'logs_folder_index' %}">Download Experiment Directory</a>
-            </li>
-            <li>
-                <a href="{% url 'turn_on_all_boards' %}">Turn On all Boards</a>
-            </li>
-            <li>
-                <a href="{% url 'turn_off_all_boards' %}">Turn Off all Boards</a>
-            </li>
-            <li>
-                <a href="{% url 'book_all_suser_slots' %}">Book all Slots</a>
             </li>
         </ul>
     </div> 

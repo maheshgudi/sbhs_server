@@ -9,8 +9,7 @@
         <script type="{% static 'js/jquery-ui.js' %}"></script> 
         <link rel="stylesheet" type="text/css" href="{% static 'css/jquery.datetimepicker.css' %}"/>
         <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}"/>
-        <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.css" />
-        <script src="//cdnjs.cloudflare.com/ajax/libs/dygraph/2.1.0/dygraph.min.js"></script>
+        <script type="text/javascript" src = "{% static 'js/dygraph-combined.js' %}"></script>
 {% endblock %}
 {% block main %}
     <div class = "row">
@@ -25,25 +24,25 @@
         </div>
     </div>
     <script>
-    (function(){
-        var h = new Dygraph(
-            document.getElementById("heat"),
-            "{{ heat }}",
-            {
-                valueRange: [0,100]
-            }
-        );
-        var f = new Dygraph(
-            document.getElementById("fan"),
-            "{{ fan }}",
-            {
-                valueRange: [0,100]
-            }
-        );
-        var t = new Dygraph(
-            document.getElementById("temp"),
-            "{{ temp }}"
-        );
-    })();
-</script>
+(function(){
+    var h = new Dygraph(
+        document.getElementById("heat"),
+        "{{ heat }}",
+        {
+            valueRange: [0,100]
+        }
+    );
+    var f = new Dygraph(
+        document.getElementById("fan"),
+        "{{ fan }}",
+        {
+            valueRange: [0,100]
+        }
+    );
+    var t = new Dygraph(
+        document.getElementById("temp"),
+        "{{ temp }}"
+    );
+})();
+    </script>
 {% endblock %}

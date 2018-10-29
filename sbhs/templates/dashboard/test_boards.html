@@ -17,129 +17,50 @@
 <div class = "container">
 	<div class = "row">
 		<div class = "span7">
+			{% if dead_servers %}
+			<div class="alert alert-danger">
+				These SBHS servers did not respond - <br/>
+				<strong>{{dead_servers|join:", "}}</strong>
+			</div>
+
+			{% endif %}
 			<table class = "table table-striped" id = "tableId">
 				<thead>
 					<tr>
 						<th>Board MID</th>
 						<th>Status</th>
 						<th>Occupied</th>
+						<th>Temperature</th>
+						<th>Set Heat</th>
+						<th>Set Fan</th>
+						<th>Action</th>
 					</tr>
 				</thead>
 				<tbody>
-					{% for board in boards %}
-						<tr style="cursor:pointer;" title="Test/Monitor board" data-toggle="modal" data-target="#myModal">
-						<td>{{board.mid}}</td>
-						<td>
-							<span class = "label label-{% if board.online %}success{% else %}danger{% endif %}">{% if board.online %}Online{% else %}Offline{% endif %}</span>
-						</td>
-						<td>
-								{% vacant_slot slot_history.start_time slot_history.end_time now as slot_status %}
-								{% if slot_status == "vacant" %}
-									<p class="label label-{% if board.online %}success{% else %}danger{% endif %}">{% if board.online %}Vacant{% else %}Not available{% endif %}</p>
-								{% elif slot_status == "occupied" %}
-									<p class = "label label-danger">Occupied</p>
-								{% endif %}
-							
-						</td>
-						</tr>
+					{% for device in all_devices %}
+					<form class = "form-horizontal" action = "{% url 'update_board_values' device.board.mid %}" method="POST" name="form_{{device.board.mid}}" autocomplete="off">
+						{% csrf_token %}
+					<tr>
+						<td>{{device.board.mid}}</td>
+						<td><span style="cursor: pointer;" class = "label label-{% if device.board.online %}success{% else %}danger{% endif %}">
+						{% if device.board.online %}Online{% else %}Offline{% endif %}</span></td>
+						{% check_board_occupancy device.board.mid as slot_status %}
+						<td><span style="cursor: pointer;" class = "label label-{% if slot_status %}danger{% else %}success{% endif %}">
+						{% if slot_status %}Occupied{% else %}Vacant{% endif %}</span></td>
+						<td>{{device.temp.temp}}</td>
+						<td><input type="text" name="set_heat" id="set_heat_{{device.board.mid}}"/></td>
+						<td><input type="text" name="set_fan" id="set_fan_{{device.board.mid}}"/></td>
+						<td><button class="btn btn-primary"> Submit </button></td>
+					</tr>
+					</form>	
 					{% endfor %}
 				</tbody>
 			</table>
+			<br/><br/>
+			<form class = "form-horizontal" action = "" method="POST" autocomplete="off"> 
+				{% csrf_token %}	
+				<center><button class = "btn btn-primary" name="reset_all" value="reset_all">Reset all boards</button></center>
+			</form>
 		</div>
-		
-		<!-- Modal code starts here -->
-        
-        <div id="myModal" class="modal fade test-modal" id="" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-		  <div class="modal-dialog">
-		    <div class="modal-content">
-		      <div class="modal-header">
-		        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-		        <h3>Test Board</h3>
-		      </div>
-		      <div id="orderDetails" class="modal-body">
-		      	<div class = "input-group">
-		      		<input type="text" class = "form-control" id = temp" disabled = "true"name="">
-		      		<span class = "input-group-btn">	
-			      		<button class = "btn btn-primary" onclick="getTemp()">Get Temperature</button>
-		      		</span>
-		      	</div>
-		      	<br>
-		      	<div class = "input-group">
-		      		Heater Input: <input type="number" size="3" min="0" max="250" id="heater-val">
-		      		Fan Input: <input type="number" size="3" min="0" max="250" id="fan-val" name="">
-		      		<span class = "input-group-btn">
-		      			<button class = "btn btn-primary" onclick="setParams()">Set Parameters</button>
-		      		</span>
-		      	</div>
-		      	<br>
-		      	<div class = "input-group">
-		      		<span class = "input-group-btn">
-		      			<button class = "btn btn-primary" onclick="resetParams()">Reset Parameters</button>
-		      		</span>
-		      	</div>
-		      </div> 
-		      <div class="modal-footer">
-		        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-		      </div>
-		    </div>
-		  </div>
-		</div>
-  
-        <!-- Modal code ends here -->
 
-        <!-- Modal code starts here -->
-
-  		<div id="myModal" class="modal fade monitor-modal" id="" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-		  <div class="modal-dialog">
-		    <div class="modal-content">
-		      <div class="modal-header">
-		        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-		        <h3>Monitor Experiment</h3>
-		      </div>
-		      <div id="orderDetails" class="modal-body">
-		      	<div class = "input-group">
-		      		<strong><p id = "username"></p></strong>
-		      		<p id = "log-data" style="word-spacing:4em"></p>
-		      		<span class = "input-group-btn">
-		      			<button class = "btn btn-primary" onclick="getLogs()">Refresh Logs</button>
-		      		</span>
-		      	</div>
-		      </div> 
-		      <div class="modal-footer">
-		        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-		      </div>
-		    </div>
-		  </div>
-		</div>     
-
-        <!-- Modal code ends here -->
-	</div>
-</div>
-
-<script type="text/javascript">
-    $("#tableId").on("click", "tr", function(e) {
-        $("#tableId").find("tr.highlight").removeClass("highlight");
-        $(this).addClass("highlight");
-        
-        label = e.currentTarget.getElementsByClassName("label")[1];
-       	console.log(label)
-       	isSelectedMachineVacant = label.className.indexOf("label-success") > -1;
-       	console.log(isSelectedMachineVacant);
-        
-        if (isSelectedMachineVacant) {
-            $("#temp").val("");
-            $("#fan-val").val("");
-            $("#heater-val").val("");
-            $(".test-modal").modal('show');
-        }
-        else {
-        	$(".test-modal").modal('hide');
-            $(".montor-modal").modal('show');
-            getLogs();
-        }
-    });
-    function getLogs(){
-    	console.log('hello from getLogs');
-    }
-</script>
 {% endblock %}
