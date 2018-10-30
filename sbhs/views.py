@@ -8,7 +8,6 @@ import inspect
 import pytz
 import requests
 import subprocess, zipfile
-# import serial
 from textwrap import dedent
 from time import gmtime, strftime
 import time as tm
@@ -20,7 +19,6 @@ from django.db import connection
 from django.utils import timezone
 from django.db.models import Count
 from django.contrib.auth.models import User
-# import automatic_slot_booking
 from django.contrib import messages
 from django.template.loader import render_to_string
 from django.views.decorators.csrf import csrf_exempt
@@ -185,7 +183,6 @@ def user_register(request):
     else:
         return redirect('account_enter')
 
-@login_required
 def activate_user(request, key):
     """
     Verify user account from the generated activation key user received
@@ -247,7 +244,6 @@ def new_activation(request, email=None):
         context['activation_msg'] = "Your account is already verified"
     return render(request,'account/activation_status.html',{})
 
-@login_required
 def update_email(request):
     """
     Updates user email_id
