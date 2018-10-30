@@ -784,6 +784,7 @@ def test_boards(request):
     now = timezone.now()
     context = {}
     dead_servers = []
+    boards = Board.objects.filter(online=True)
     if not is_moderator(user):
         raise Http404("You are not allowed to see this page.")
     else:
@@ -800,11 +801,10 @@ def test_boards(request):
         if request.POST.get("reset_all") == "reset_all":
             for board in boards:
                 resp = connect_sbhs(board.raspi_path,"reset/{0}".format(
-                                      board.mid
+                                      board.usb_id
                                       )
                                       )
 
-        boards = Board.objects.filter(online=True)
         all_devices = []
         for device in boards:
             devices = {}
