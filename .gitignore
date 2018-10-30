@@ -44,7 +44,6 @@ apache/*
 *.db
 wsgi.log
 *.sqlite3
-data/
 _build/
 *.log
 experiments
