@@ -851,7 +851,6 @@ def fetch_logs(request):
     """
     user = request.user
     context = {}
-    now = dt.now()
     if not is_moderator(user):
         raise Http404("You are not allowed to see this page.")
     else:
@@ -863,12 +862,13 @@ def fetch_logs(request):
                 if start_date and end_date:
                     ys,ms,ds = [int(x) for x in start_date.split('-')]
                     ye,me,de =[int(x) for x in end_date.split('-')]
-                slot = Slot.objects.filter(
-                        start_time__date__gte=date(ys,ms,ds), 
-                        end_time__date__lte=date(ye,me,de)
-                        )
-                experiment = Experiment.objects.filter(slot__in=slot)
-                context["experiments"] = experiment
+                    slot = Slot.objects.filter(
+                            start_time__date__gte=date(ys,ms,ds),
+                            end_time__date__lte=date(ye,me,de)
+                            )
+                    if slot:
+                        experiment = Experiment.objects.filter(slot__in=slot)
+                        context["experiments"] = experiment
         else:
             form=FilterLogsForm()
         context['form']=form
