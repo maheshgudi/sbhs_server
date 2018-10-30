@@ -194,7 +194,7 @@ def activate_user(request, key):
     if profile.is_email_verified:
         context['activation_msg'] = "Your account is already verified"
         return render(request,'account/activation_status.html',context)
-    if timezone.localtime() > profile.key_expiry_time:
+    if timezone.now() > profile.key_expiry_time:
         content['msg'] = dedent(
             """
             Your activation time expired. Please try again
@@ -229,7 +229,7 @@ def new_activation(request, email=None):
 
     if not user.profile.is_email_verified:
         user.profile.activation_key = generate_activation_key(user.username)
-        user.profile.key_expiry_time = timezone.localtime() \
+        user.profile.key_expiry_time = timezone.now() \
                                         + timezone.timedelta(minutes=20)
         user.profile.save()
         new_user_data = User.objects.get(email=email)
@@ -288,7 +288,7 @@ def slot_new(request):
         all_board_users_id = []
     slot_history = Slot.objects.filter(user=user).order_by("-start_time") 
     context = {}
-    now = timezone.localtime()
+    now = timezone.now()
     current_slot = slot_history.filter(start_time__lt=now, end_time__gte=now)
     board_all_booked_slots = Slot.objects.board_all_booked_slots(
                                 board.board.mid
@@ -309,7 +309,7 @@ def slot_new(request):
                 new_slot_date = new_slot.start_time.date()
                 new_slot_time = new_slot.start_time.time()
                 new_slot_date_slots = slot_history.filter(
-                                        start_time__date=new_slot_date
+                                        start_time=new_slot_date
                                         )
 
                 if len(new_slot_date_slots) >= settings.LIMIT:
@@ -406,7 +406,7 @@ def initiation(request):
     user = authenticate(username=username, password=password)
     if user:
         if user.is_active:
-            now = timezone.localtime()
+            now = timezone.now()
             slots = Slot.objects.get_user_slots(user).order_by("id")
             slot = slots.last()
             board = UserBoard.objects.get(user=user).board
