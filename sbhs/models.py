@@ -101,12 +101,12 @@ class Profile(models.Model):
 class SlotManager(models.Manager):
 
     def get_user_slots(self, user):
-        now = timezone.localtime()
+        now = timezone.now()
         slots = self.filter(user=user, start_time__lte=now, end_time__gt=now)
         return slots
 
     def get_all_active_slots(self):
-        now = timezone.localtime()
+        now = timezone.now()
         slots = self.filter(start_time__lte=now, end_time__gt=now)
         return slots
 
@@ -116,7 +116,7 @@ class SlotManager(models.Manager):
                            user__in=users
                            ).count() == 0
     def get_active_slot_for_board(self, mid):
-        now = timezone.localtime()
+        now = timezone.now()
         users = [userboard.user.id for userboard in
                  UserBoard.objects.filter(board__mid=mid)
                  ]
@@ -125,7 +125,7 @@ class SlotManager(models.Manager):
         return slots
 
     def board_all_booked_slots(self,mid):
-        now = timezone.localtime()
+        now = timezone.now()
         users = [userboard.user.id for userboard in UserBoard.objects.filter(
                  board__mid=mid)
                 ]

@@ -309,9 +309,8 @@ def slot_new(request):
                 new_slot_date = new_slot.start_time.date()
                 new_slot_time = new_slot.start_time.time()
                 new_slot_date_slots = slot_history.filter(
-                                        start_time=new_slot_date
+                                        start_time__date=new_slot_date
                                         )
-
                 if len(new_slot_date_slots) >= settings.LIMIT:
                     messages.warning(request,'Cannot Book more than {0} \
                         slots in advance in a day'.format(settings.LIMIT))
