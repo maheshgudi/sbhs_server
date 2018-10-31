@@ -404,6 +404,7 @@ def initiation(request):
     password = request.POST.get("password")
     user = authenticate(username=username, password=password)
     if user:
+        login(request, user)
         if user.is_active:
             now = timezone.now()
             slots = Slot.objects.get_user_slots(user).order_by("id")
@@ -459,12 +460,12 @@ def initiation(request):
         }
     return JsonResponse(message, safe=True, status=200)
 
-def map_sbhs_to_rpi(client_name):
+def map_sbhs_to_rpi():
     """
     Scans if the machine are connected to the rpis.
     If the machines are connected map them with their specific rpis.
     """
-    r_pis = settings.RASP_PI_IPS
+    r_pis = settings.SBHS_API_IPS
     map_machines = []
     dead_machines = []
     rpi_map = {}
@@ -480,31 +481,21 @@ def map_sbhs_to_rpi(client_name):
                 map_machines.append(rpi_map.copy())
             except:
                 dead_machines.append(r_pi)
-    rpi_map["rpi_ip"] = client_name
-    try:
-        mac_ids = connect_sbhs(client_name, "get_machine_ids")
-        board = Board()
-        board.save_board_details(client_name, mac_ids)
-        rpi_map["mac_ids"] = [i['sbhs_mac_id'] for i in mac_ids]
-        map_machines.append(rpi_map)
-    except:
-        dead_machines.append(client_name)
     return map_machines, dead_machines
 
 def connect_sbhs(rpi_ip, experiment_url):
     connect_rpi = requests.get("http://{0}/experiment/{1}".format(
-                           rpi_ip, experiment_url
-                           )
-                            )
+                           rpi_ip, experiment_url), timeout=5
+                        )
     data = json.loads(connect_rpi.text)
     return data
 
+@login_required
 @csrf_exempt
 def experiment(request):
     try:
-        username = request.POST.get("username") 
+        user = request.user
         server_start_ts = int(tm.time() * 1000)
-        user = User.objects.get(username=username)
         slot = Slot.objects.get_user_slots(user)\
                             .order_by("start_time").last()
         board = UserBoard.objects.get(user=user).board
@@ -788,9 +779,7 @@ def test_boards(request):
         raise Http404("You are not allowed to see this page.")
     else:
         if request.POST.get("update_boards") == "update_boards":
-            board_check, dead_servers = map_sbhs_to_rpi(
-                                        request.META["SERVER_NAME"]
-                                        )
+            board_check, dead_servers = map_sbhs_to_rpi()
             board = Board()
             all_mac_ids = []
             for machines in board_check:
@@ -799,17 +788,25 @@ def test_boards(request):
 
         if request.POST.get("reset_all") == "reset_all":
             for board in boards:
-                resp = connect_sbhs(board.raspi_path,"reset/{0}".format(
+                try:
+                    resp = connect_sbhs(board.raspi_path,"reset/{0}".format(
                                       board.usb_id
                                       )
                                       )
+                except requests.exceptions.ConnectionError:
+                    if device.raspi_path not in dead_servers:
+                        dead_servers.append(device.raspi_path)
 
         all_devices = []
         for device in boards:
             devices = {}
-            temp = connect_sbhs(device.raspi_path,
-                                "get_temp/{0}".format(device.usb_id)
-                                )
+            try:
+                temp = connect_sbhs(device.raspi_path,
+                                   "get_temp/{0}".format(device.usb_id)
+                                    )
+            except requests.exceptions.ConnectionError:
+                if device.raspi_path not in dead_servers:
+                    dead_servers.append(device.raspi_path)
             devices["board"] = device
             devices["temp"] = temp
             all_devices.append(devices)

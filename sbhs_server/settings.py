@@ -179,10 +179,11 @@ PRODUCTION_URL = credentials.PRODUCTION_URL
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
-RASP_PI_IPS = [] 
+SBHS_API_IPS = []
  
-# enter comma separated raspberry pi IPs here with ports
 # for e.g 127.0.0.1:1234
+# Enter comma separated SBHS API IPs here with ports
+# (if hosted on specific ports)
 
 CLIENT_VERSION = 3
 #Client version supported by Django server
