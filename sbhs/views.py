@@ -904,10 +904,10 @@ def show_video(request):
     user = request.user
     context = {}
     board = UserBoard.objects.filter(user=user).order_by("id").last()
-    image_link = board.board.image_link()
-    mid = str(board.board.mid)
-    context["image_link"] = image_link
-    context["mid"] = mid
+    if board:
+        image_link = board.board.image_link()
+        context["image_link"] = image_link
+    context["mid"] = board.board.mid
     return render(request, 'webcam/show_video.html',context)
 
 @login_required
@@ -920,8 +920,9 @@ def show_video_to_moderator(request,mid):
     if not is_moderator(user):
         raise Http404("You are not allowed to view this page.")
     else:
-        board = Board.objects.get(mid=mid)
-        image_link = board.image_link()
-        context["image_link"] = image_link
+        board = Board.objects.filter(mid=mid).order_by("id").last()
+        if board:
+            image_link = board.image_link()
+            context["image_link"] = image_link
         context["mid"] = mid
         return render(request, 'webcam/show_video.html',context)
