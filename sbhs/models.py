@@ -66,6 +66,13 @@ class Board(models.Model):
                                     self.userboard_set.all().count()
                                     )
 
+    def image_link(self):
+        """
+        Function to show the image obtained from webcam
+        """
+        return settings.WEBCAM_STATIC_DIR + "image" + '0' + str(self.mid) \
+                + ".jpeg"
+
 class Profile(models.Model):
     """
     Profile model to store user details.
@@ -167,12 +174,11 @@ class UserBoard(models.Model):
     def __str__(self):
         return '{0}: {1}'.format(self.user.username, self.board.mid)
 
-class Webcam():
+class Webcam(object):
 
-    def __init__(self):
-        pass
-
-    def load_image(className,mid):
+    @staticmethod
+    def load_image(mid):
         command = "timeout 2s streamer -q -f jpeg -c /dev/video" + '0'+str(mid)
-        command += " -o " + settings.WEBCAM_DIR + "image" + '0'+str(mid) + ".jpeg"
+        command += " -o " + settings.WEBCAM_DIR + "image" + '0'+str(mid) \
+                    + ".jpeg"
         os.system(command)

@@ -20,6 +20,7 @@
 	{% endblock %}
 </head>
 <body>
+
 	<div id = "header">
 		{% block nav %}
 
@@ -35,7 +36,7 @@
 							{% if user.is_authenticated %}
 								<li id="book-slot-nav"><a href="{% url 'slot_new' %}">Book slot</a></li>
 								<li id="download-log-nav"><a href="{% url 'experiment_logs' %}">Download log files</a></li>
-								<li id="video-nav"><a href="">Show video</a></li>
+								<li id="video-nav"><a href="{% url 'show_video' %}">Show video</a></li>
 								{% if user.profile.is_moderator %}
 									<li id="admin-nav"><a href="{% url 'moderator_dashboard' %}">Moderator Dashboard</a></li>
 								{% endif %}
@@ -58,7 +59,7 @@
 										<div class="dropdown-menu">
 											<ul class="nav">
 								        <li><a class="dropdown-item" href="{% url 'password_change'%}">Change Password</a></li>
-								        <li><a>Request machine change</a></li>
+								        <li><a data-toggle="modal" data-target="#myModal">Request Machine Change</a></li>
 								        <li><a href="{% url 'account_logout' %}">Logout</a></li>
 											</ul>
 										</div>
@@ -91,7 +92,6 @@
 	
 		</div>
 	</div>
-
 	
 	<div class="footer" id = "footer">
 		{% block footer %}
@@ -138,6 +138,25 @@
 		</div>	
 	</div>
 
-
+{% if user.is_authenticated %}
+	<!-- Modal -->
+  <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog">
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal">&times;</button>
+	        <h3>Machine change</h3>
+        </div>
+        <div class="modal-body">
+	        <p>Please send an email to <strong>rupakrokade@iitb.ac.in</strong> stating the reasons why machine change is required.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endif %}
 </body>
 </html>

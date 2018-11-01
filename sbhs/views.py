@@ -739,9 +739,14 @@ def all_bookings(request):
 @login_required        
 def all_images(request):
     user = request.user
+    context = {}
     if not is_moderator(user):
         raise Http404("You are not allowed to see this page.")
     else:
+        boards = Board.objects.filter(online=True)
+        for board in boards:
+            Webcam.load_image(board.mid)
+        context["boards"] = boards
         return render(request,'dashboard/all_images.html')
 
 
@@ -891,5 +896,32 @@ def reload(request, mid):
     Webcam.load_image(mid)
     return HttpResponse("")
 
+@login_required
 def show_video(request):
-    board = request.user
+    """
+    Show the video of the SBHS.
+    """
+    user = request.user
+    context = {}
+    board = UserBoard.objects.filter(user=user).order_by("id").last()
+    image_link = board.board.image_link()
+    mid = str(board.board.mid)
+    context["image_link"] = image_link
+    context["mid"] = mid
+    return render(request, 'webcam/show_video.html',context)
+
+@login_required
+def show_video_to_moderator(request,mid):
+    """
+    Shows the video of all the SBHSs to the moderator.
+    """
+    user = request.user
+    context = {}
+    if not is_moderator(user):
+        raise Http404("You are not allowed to view this page.")
+    else:
+        board = Board.objects.get(mid=mid)
+        image_link = board.image_link()
+        context["image_link"] = image_link
+        context["mid"] = mid
+        return render(request, 'webcam/show_video.html',context)

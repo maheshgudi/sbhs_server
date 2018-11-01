@@ -92,4 +92,9 @@ urlpatterns = [
             name='download_file'),
 
     url(r'^moderator/updatemid/$', views.update_mid, name='update_mid'),
+    url(r'^moderator/webcam/(?P<mid>\d+)/$',views.show_video_to_moderator,
+            name='show_video_to_moderator'),
+    ####################### Webcam Url #########################
+    url(r'^show_video/$',views.show_video,name='show_video'),
+    url(r'^reload_image/(.*)/$',views.reload,name='reload_image'),
 ]

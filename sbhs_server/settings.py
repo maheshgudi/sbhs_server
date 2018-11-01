@@ -194,5 +194,14 @@ EXPERIMENT_LOGS_DIR = os.path.join(BASE_DIR, 'experiments')
 SBHS_GLOBAL_LOG_DIR = os.path.join(BASE_DIR, 'log')
 # Path for sbhs global log directory on Django server.
 
+
 # Advance slot booking LIMIT for a day.
 LIMIT = 2
+
+WEBCAM_DIR = os.path.join(STATIC_ROOT, 'img/webcam/') if IS_DEVELOPMENT \
+                                                      else os.path.join(
+                                                        BASE_DIR,
+                                                        'static/img/webcam/'
+                                                      )
+WEBCAM_STATIC_DIR = 'img/webcam/'
+

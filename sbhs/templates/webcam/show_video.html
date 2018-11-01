@@ -1,0 +1,54 @@
+{% extends "account/home.html" %}
+{% load staticfiles %}
+{% block title %}
+	Show video
+{% endblock %}
+{% block content %}
+	{% block headerfiles %}
+		<script type="{% static 'js/jquery-ui.js' %}"></script>
+		<link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+	{% endblock %}
+	<br>
+	<div>
+		<div>
+			<script type="text/javascript">
+				document.getElementById("video-nav").classList.add("active");
+			</script>
+			<div class = "">
+				<h3>SBHS live feed: Machine ID {{mid}}</h3>
+				<div class = "offeset4" style="text-align:center;">
+				</div>
+				<img src="{% static image_link %}" id="videoImage" alt="SBHS live feed" class = "offeset4">
+				<div class = "offeset4" style="text-align:center">
+					<a href="#" onclick = "image_reloader()" id = "image_reloader" class = "btn btn-primary btn-large">Refresh Image.</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		{% if request.user.profile.is_moderator %}
+			setInterval(function(){
+				var refresh = new Image();
+				refresh.src = "{% url 'reload_image' mid %}";
+				document.getElementById("videoImage").src = "{% static image_link %}" + new Date().getTime();
+			}, 2000);
+		{% else %}
+		window.image_reloader = function(){
+			var button = document.getElementById("image_reloader");
+
+			if (!button.disabled){
+				button.setAttribute("disabled", true);
+				var refresh = new Image();
+				refresh.src = "{% url 'reload_image' mid %}";
+				document.getElementById("videoImage").src = "{% static image_link %}" + new Date.getTime();
+				setTimeout(function(){
+					button.removeAttribute("disabled");
+				}, 3000);
+			}
+		}
+		(function(){
+			image_reloader();
+		})();
+		{% endif %}
+	</script>
+{% endblock %}

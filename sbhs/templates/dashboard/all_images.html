@@ -1,9 +1,23 @@
 {% extends 'dashboard/dashboard_index.html' %}
+{% load staticfiles %}
 {% block title %}
     All Images
 {% endblock %}
 {% block main %}
-    <div>
-        <h4>All Images</h4>
+    <div class = "container">
+        <div class = "row">
+	        {% for b in boards %}
+	        <div class="span4" style="text-align: center; outline: 1px solid black">
+	            <img src="{% static b.image_link %}" alt="{{ b.mid }}" style="width:90%;">
+	            <br>
+	            Board MID: {{ b.mid }}
+	        </div>
+		{% endfor %}
     </div>
+  </div>
+<script type="text/javascript">
+    var timer = setInterval(function(){
+        location.reload();
+    }, 25000);
+</script>
 {% endblock %}
