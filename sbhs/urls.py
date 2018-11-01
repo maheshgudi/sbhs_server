@@ -96,5 +96,4 @@ urlpatterns = [
             name='show_video_to_moderator'),
     ####################### Webcam Url #########################
     url(r'^show_video/$',views.show_video,name='show_video'),
-    url(r'^reload_image/(.*)/$',views.reload,name='reload_image'),
 ]

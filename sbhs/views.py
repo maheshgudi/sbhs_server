@@ -740,13 +740,19 @@ def all_bookings(request):
 def all_images(request):
     user = request.user
     context = {}
+    image_links = []
     if not is_moderator(user):
         raise Http404("You are not allowed to see this page.")
     else:
         boards = Board.objects.filter(online=True)
         for board in boards:
-            Webcam.load_image(board.mid)
-        context["boards"] = boards
+            board_image_link = {}
+            capture_status = Webcam.load_image(board.mid)
+            board_image_link["board"] = board
+            if capture_status != 0:
+                board_image_link["image_link"] = board.image_link()
+            image_links.append(board_image_link.copy())
+        context["image_links"] = image_links
         return render(request,'dashboard/all_images.html')
 
 
@@ -891,10 +897,6 @@ def download_file(request, experiment_id):
 
 
 ################## Webcam Views #############################
-
-def reload(request, mid):
-    Webcam.load_image(mid)
-    return HttpResponse("")
 
 @login_required
 def show_video(request):
