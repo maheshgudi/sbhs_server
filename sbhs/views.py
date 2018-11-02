@@ -747,9 +747,10 @@ def all_images(request):
         boards = Board.objects.filter(online=True)
         for board in boards:
             board_image_link = {}
-            Webcam.load_image(board.mid)
+            capture_status = Webcam.load_image(board.mid)
             board_image_link["board"] = board
-            board_image_link["image_link"] = board.image_link()
+            if capture_status != 0:
+                board_image_link["image_link"] = board.image_link()
             image_links.append(board_image_link.copy())
         context["image_links"] = image_links
         return render(request,'dashboard/all_images.html')
