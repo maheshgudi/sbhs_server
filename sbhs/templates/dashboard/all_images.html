@@ -6,14 +6,16 @@
 {% block main %}
     <div class = "container">
         <div class = "row">
-            <table>
-            {% for board in image_links %}
-                <tr>
-                    <td>{{board.board.mid}}</td>
-                   <td><img src="{% static board.image_link %}"/></td>
-                </tr> 
-        {% endfor %}
-            </table>
+            <div class = "gallery" id = "gallery">
+                <div class = "mb-3 pics animation all 2">
+                    <div class = "thumbnail">
+                        {% for board in image_links %}
+                            {{board.borad.mid}}
+                            <img src="{% static board.image_link %}">
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
     </div>
   </div>
 <script type="text/javascript">
