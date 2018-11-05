@@ -753,7 +753,7 @@ def all_images(request):
                 board_image_link["image_link"] = board.image_link()
             image_links.append(board_image_link.copy())
         context["image_links"] = image_links
-        return render(request,'dashboard/all_images.html')
+        return render(request,'dashboard/all_images.html', context)
 
 
 @login_required
