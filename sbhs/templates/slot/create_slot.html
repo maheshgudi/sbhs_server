@@ -15,36 +15,39 @@
 	<br>	
 	<div class="row">
 	    <div class="col-sm-3 col-md-2 sidebar">
-	    	<ul class="nav nav-sidebar nav-stacked">
+		<ul class="nav nav-sidebar nav-stacked nav-pills red">
 				<li class = "active">
 					<a href="#tab_a" data-toggle="pill">Create Slot</a>
 				</li>
 				<li>
-					<a href="#tab_b" data-toggle="pill">Slot History</a>
+					<a href="#tab_b" data-toggle="pill">View/Delete slot</a>
 				</li>
 			</ul>
 		</div>
 		<div class="tab-content col-md-10">
 			<div class = "tab-pane active" id="tab_a">
 				<br>
-				<h4>Book future slots:</h4>
+				<h2>Book Slot</h2>
 				<form class = "form-horizontal" action = "" method="POST" autocomplete="off"> 
-					<center>
 					<div class = "form-group">
 						{% csrf_token %}
+						{% if avail_slot %}
+						<h4>Book Current Slot:</h4>
+						<b> Current Slot <span>{{now.hour}}:00 -- {{now.hour}}:{{duration}}</span> is vacant</b><br/>
+						<button class="btn btn-primary" type="submit" name="book_now" value="book_now">Book Now</button><br/>
+						<br>
+						OR
+						{% endif %}
+						<br>
+						<h4>Book future slots:</h4>
+						<br>
 						<b>Book for a given date:</b><br/>
-									{{form.as_p}}
-					<button class="btn btn-primary" type="submit" name='book_date' value='book_date'>Book Date</button><br/>
-					<center>OR</center>
-					<b>Book for current date and time</b><br/>
-
-					<button class="btn btn-primary" type="submit" name="book_now" value="book_now">Book Now</button><br/>
+						{{form.as_p}}
+						<button class="btn btn-primary" type="submit" name='book_date' value='book_date'>Book Date</button><br/>
 					</div>
-					</center>
-
-					
 				</form>
 				<div class = "tab-content col-md-10">
+					{% if board_all_booked_slots %}
 					<table class = "table table-striped">
 						<thead>
 							<tr>
@@ -52,7 +55,7 @@
 									Sr.No
 								</th>
 								<th>
-									Already Booked Slots
+									Slots Booked by other users
 								</th>
 							</tr>
 						</thead>
@@ -65,9 +68,11 @@
 							{% endfor %}
 						</tbody>
 					</table>
+					{% endif %}
 				</div>
 			</div>
 			<div class = "tab-pane col-md-10" id="tab_b">
+				{% if history %}
 				<form action="" method="POST">
 					{%csrf_token %}
 						<table class="table table-striped">
@@ -76,7 +81,7 @@
 							<tr>
 								<b><th></th></b>
 								<b><th>Start Time of a Slot</th></b>
-								<b><th>Duration</th></b>
+								<b><th>End Time of a Slot</th></b>
 								<b><th>Action</th></b>
 							</tr>	
 						</thead>
@@ -105,6 +110,9 @@
 					</table>
 					<button class="btn btn-danger" type="submit" name="delete" value="delete">Delete</button>
 				</form>
+				{% else %}
+					<h3>No booked slots to show.</h3>
+				{% endif %}
 			</div>
 		</div>
 	</div>
@@ -115,6 +123,7 @@
 			$(".datetimepicker").datetimepicker({
 				format:'Y-m-d H:i:s',
 				minDate: dateToday, // got this from https://stackoverflow.com/a/9978261/4883946
+				minDateTime:dateToday,
 			});
 		})
 	</script>

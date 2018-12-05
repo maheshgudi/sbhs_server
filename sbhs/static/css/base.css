@@ -1,7 +1,8 @@
 .content { 
-    padding-top: 65px; 
+    padding-top: 22px;
     padding-bottom: 100px;
 }
+
 .footer{
 	position: fixed;
 	bottom: 0;
@@ -14,10 +15,12 @@
 	width: 100%;
 	font: bold 12px;
 }
+
 html, body{
 	margin:0;
 	padding:0;
 	height:100%;
+    overflow-x: hidden;
 }
 
 #container{
@@ -25,28 +28,31 @@ html, body{
 	position: relative;
 }
 
-#header{
-
-}
-
 #body{
 	padding: 10px;
 	padding-bottom: 60px: 
 }
+
 .gallery{
         -webkit-column-count: 3;
         -moz-column-count: 3;
         column-count: 3;
         -webkit-column-width: 33%;
         -moz-column-width: 33%;
-        column-width: 33%; }
+        column-width: 33%;
+}
+
 .gallery .pics {
         -webkit-transition: all 350ms ease;
-        transition: all 350ms ease; }
+        transition: all 350ms ease;
+}
+
 .gallery .animation {
         -webkit-transform: scale(1);
         -ms-transform: scale(1);
-        transform: scale(1); }
+        transform: scale(1);
+}
+
 @media (max-width: 450px) {
         .gallery {
         -webkit-column-count: 1;
@@ -57,9 +63,51 @@ html, body{
         column-width: 100%;
         }
 }
+
 @media (max-width: 400px) {
         .btn.filter {
         padding-left: 1.1rem;
         padding-right: 1.1rem;
         }
+}
+
+/* messages */
+ul.messages {
+    margin-left:5%;
+    margin-right:5%;
+    padding:0;
+    padding-top: 10px;
+    list-style-type:
+    none;
+}
+
+ul.messages li.success,
+ul.messages li.warning,
+ul.messages li.error,
+ul.messages li.info {
+    margin:0;
+    padding:14px 20px;
+    list-style:none;
+    color:#fff;
+}
+
+ul.messages li.success { background:#81ce81; }
+ul.messages li.success a { color:#0ac33e; }
+
+ul.messages li.error { background:#c94c4c; color:white; }
+ul.messages li.error a { color:#e9828e; }
+
+ul.messages li.info { background:#faffae; color:#696b4e; }
+ul.messages li.info a { color:#1586de; }
+
+ul.messages li.warning { background:#de9404; }
+ul.messages li.warning a { color:#f49000; }
+
+ul.messages li a.close {
+    margin:0;
+    float:right;
+    opacity:1;
+    border:0;
+    box-shadow:none;
+    text-shadow:none;
 }

@@ -6,26 +6,30 @@
 <div class = "container">
 	<div class = "row">
 		<h3>Download previous log files</h3>
-		<table class = "table table-condensed">
-			<thead>
-				<tr>
-					<th>Date</th>
-                    <th>Slot timings</th>
-                    <th>Filename</th>
-                    <th>Download</th>
-				</tr>
-			</thead>
-			<tbody>
-				{% for exp in experiment %}
+		{% if experiment %}
+			<table class = "table table-condensed">
+				<thead>
 					<tr>
-						<td>{{exp.slot.start_time|date:"M d, Y"}}</td>
-						<td>{{exp.slot.start_time|time}} -- {{exp.slot.end_time|time}} </td>
-						<td>{{exp.logname}}</td>
-						<td><a href="{% url 'experiment_logs' exp.slot.id %}" target="_blank">Download</a></td>
+						<th>Date</th>
+	                    <th>Slot timings</th>
+	                    <th>Filename</th>
+	                    <th>Download</th>
 					</tr>
-				{% endfor %}
-			</tbody>
-		</table>
+				</thead>
+				<tbody>
+					{% for exp in experiment %}
+						<tr>
+							<td>{{exp.slot.start_time|date:"M d, Y"}}</td>
+							<td>{{exp.slot.start_time|time}} -- {{exp.slot.end_time|time}} </td>
+							<td>{{exp.logname}}</td>
+							<td><a href="{% url 'experiment_logs' exp.slot.id %}" target="_blank">Download</a></td>
+						</tr>
+					{% endfor %}
+				</tbody>
+			</table>
+		{% else %}
+			There are no log files for <strong>{{request.user.username}}</strong>. They appear once your perform an experiment.
+		{% endif %}
 	</div>
 </div>
 {% endblock %}

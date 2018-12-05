@@ -15,13 +15,15 @@
 				document.getElementById("video-nav").classList.add("active");
 			</script>
 			<div class = "">
-				<h3>SBHS live feed: Machine ID {{mid}}</h3>
-				<div class = "offeset4" style="text-align:center;">
-				</div>
-				<img src="{% static image_link %}" id="videoImage" alt="SBHS live feed" class = "offeset4">
-				<div class = "offeset4" style="text-align:center">
-					<a href="#" onclick = "image_reloader()" id = "image_reloader" class = "btn btn-primary btn-large">Refresh Image</a>
-				</div>
+				<center>
+					<h3>SBHS live feed: Machine ID {{mid}}</h3>
+					<div class = "offeset4" style="text-align:center;">
+					</div>
+					<img src="{% static image_link %}" id="videoImage" alt="SBHS live feed" class = "offeset4">
+					<div class = "offeset4" style="text-align:center">
+						<a href="#" onclick = "image_reloader()" id = "image_reloader" class = "btn btn-primary btn-large">Refresh Image</a>
+					</div>
+				</center>
 			</div>
 		</div>
 	</div>
