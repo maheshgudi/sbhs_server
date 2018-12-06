@@ -14,17 +14,15 @@
 {% endblock %}
 {% block main %}
     <div>
-        <h4>Filter Log files</h4>
   		<form class = "form-horizontal" action = "" method="POST" autocomplete="off"> 
-			<center>
 			<div class = "form-group">
+				<h4>Filter Log files</h4>
 				{% csrf_token %}
 				{{form.as_p}}
 			<button class="btn btn-primary" type="submit" name='book_date' value='book_date'>Fetch</button><br/>
 			</div>
-			</center>
-					
 		</form>
+		{% if experiments %}
 		<table class = "table table-border">
 			<thead>
 				<tr>
@@ -44,6 +42,7 @@
 				{% endfor %}
 			</tbody>
 		</table>
+		{% endif %}
     </div>
     <script type="text/javascript">
 		var dateToday = new Date();

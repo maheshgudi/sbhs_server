@@ -30,25 +30,25 @@ urlpatterns = [
 
     # change password urls
     url(r'^account/password-change/$', password_change, 
-            {'template_name': 'account/registration/password_change_form.html'},
+            {'template_name': 'registration/password_change_form.html'},
             name='password_change'),
     url(r'^account/password-change/done/$', password_change_done, 
-            {'template_name': 'account/registration/password_change_done.html'},
+            {'template_name': 'registration/password_change_done.html'},
             name='password_change_done'),
 
     # restore password urls
     url(r'^account/password-reset/$', password_reset, 
-           {'template_name': 'account/registration/password_reset_form.html'}, 
+           {'template_name': 'registration/password_reset_form.html'},
            name='password_reset'),
     url(r'^account/password-reset/done/$', password_reset_done, 
-            {'template_name': 'account/registration/password_reset_done.html'}, 
+            {'template_name': 'registration/password_reset_done.html'},
             name='password_reset_done'),
     url(r'^account/password-reset/confirm/(?P<uidb64>[-\w]+)/(?P<token>[-\w]+)/$', 
             password_reset_confirm, 
-            {'template_name': 'account/registration/password_reset_confirm.html'},
+            {'template_name': 'registration/password_reset_confirm.html'},
             name='password_reset_confirm'),
     url(r'^account/password-reset/complete/$', password_reset_complete, 
-            {'template_name': 'account/registration/password_reset_complete.html'},
+            {'template_name': 'registration/password_reset_complete.html'},
             name='password_reset_complete'),
 
     ################## Slot Urls #######################

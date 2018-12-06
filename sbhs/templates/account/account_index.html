@@ -18,8 +18,20 @@
             <h2>Create Account</h2>
             <form action="{% url 'account_create' %}" method="POST">
                 {% csrf_token %}
-                {{registration_form|crispy}}
-
+                {% for hidden_field in registration_form.hidden_fields %}
+                    {{hidden_field}}
+                {% endfor %}
+                {% for field in registration_form.visible_fields %}
+                    <div class = "form-group">
+                        <label>{{field.label_tag}}</label>
+                        <br>
+                        {{field}}
+                        <label style="color:red;">{{field.errors}}</label><br>
+                        {% if field.help_text %}
+                            <small class="form-text text-muted">{{field.help_text}}</small>
+                        {% endif %}
+                    </div>
+                {% endfor %}
                 <input type="submit" class="btn btn-inverse" value="New User? Sign-Up">
             </form>
         </div>

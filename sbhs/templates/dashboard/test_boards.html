@@ -16,6 +16,7 @@
 {% block main %}
 <div class = "container">
 	<div class = "row">
+		{% if all_devices %}
 		<div class = "span7">
 			{% if dead_servers %}
 			<div class="alert alert-danger">
@@ -41,15 +42,15 @@
 						{% csrf_token %}
 					<tr>
 						<td>{{device.board.mid}}</td>
-						<td><span style="cursor: pointer;" class = "label label-{% if device.board.online %}success{% else %}danger{% endif %}">
+						<td><span class = "label label-{% if device.board.online %}success{% else %}danger{% endif %}">
 						{% if device.board.online %}Online{% else %}Offline{% endif %}</span></td>
 						{% check_board_occupancy device.board.mid as slot_status %}
-						<td><span style="cursor: pointer;" class = "label label-{% if slot_status %}danger{% else %}success{% endif %}">
+						<td><span class = "label label-{% if slot_status %}danger{% else %}success{% endif %}">
 						{% if slot_status %}Occupied{% else %}Vacant{% endif %}</span></td>
 						<td>{{device.temp.temp}}</td>
 						<td><input type="text" name="set_heat" id="set_heat_{{device.board.mid}}"/></td>
 						<td><input type="text" name="set_fan" id="set_fan_{{device.board.mid}}"/></td>
-						<td><button class="btn btn-primary"> Submit </button></td>
+						<td><button class = "btn btn-primary" {% if slot_status %} disabled {% endif %}>Submit</button></td>
 					</tr>
 					</form>	
 					{% endfor %}
@@ -64,5 +65,11 @@
 				</span>
 			</form>
 		</div>
-
+		{% else %}
+			<h2>
+				No boards Online
+			</h2>
+		{% endif %}
+	</div>
+</div>
 {% endblock %}

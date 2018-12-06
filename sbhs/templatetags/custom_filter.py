@@ -18,8 +18,4 @@ def compare_slot_time(start_time, end_time, now):
 
 @register.simple_tag
 def check_board_occupancy(mid):
-    slot = Slot.objects.get_active_slot_for_board(mid)
-    if slot:
-        return True
-    else:
-        return False
+    return Slot.objects.get_active_slot_for_board(mid).exists()

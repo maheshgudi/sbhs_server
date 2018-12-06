@@ -41,7 +41,6 @@ from .send_emails import send_user_mail
 from sbhs_server import credentials as credentials
 from sbhs.decorators import email_verified
 
-
 ################# pages views #######################
 
 def index(request, next_url=None):
@@ -91,20 +90,24 @@ def account_index(request):
     user = request.user
     if user.is_authenticated():
         if not UserBoard.objects.filter(user=user).exists():
-            if Board.objects.all().exists():
+            if Board.objects.filter(online=True).exists():
                 user_board = random.choice(Board.objects.filter(
                                            online=True
                                             )
                                            )
                 UserBoard.objects.create(user=user, board=user_board)
             else:
-                raise Http404("Could not find any SBHS devices connected.")
+                messages.error(request,"Could not find any SBHS devices \
+                                        connected. Therefore you've not been \
+                                        assigned any board. Please contact \
+                                        admin.")
         return render(request,'account/home.html')
 
     return render(request,'account/account_index.html',{
         'login_form':UserLoginForm(request.POST or None),
         'registration_form':UserRegistrationForm(request.POST or None)    
     })
+
 
 def user_login(request):
     """
@@ -132,7 +135,7 @@ def user_login(request):
                     messages.success(request,"Account Disabled")
                     return redirect('account_enter')
             else:
-                messages.success(request, "Username and/or Password is \
+                messages.error(request, "Username and/or Password is \
                                             invalid")
                 return redirect('account_enter')
         else:
@@ -146,12 +149,14 @@ def user_login(request):
         }
     return redirect('account_enter')
 
+
 def user_logout(request):
     """
     Logs out a logged-in user
     """
     logout(request)
     return redirect('account_enter')
+
 
 def user_register(request):
     """
@@ -163,9 +168,10 @@ def user_register(request):
         return render(request,'account/home.html')
     context={}
     if request.method == 'POST':
-        form = UserRegistrationForm(request.POST)
-        if form.is_valid():
-            u_name, pwd, user_email, key= form.save()
+        registration_form = UserRegistrationForm(request.POST)
+        login_form = UserLoginForm()
+        if registration_form.is_valid():
+            u_name, pwd, user_email, key= registration_form.save()
             new_user = authenticate(username=u_name,password=pwd)
             login(request, new_user)
             if user_email and key:
@@ -179,9 +185,12 @@ def user_register(request):
                 )
             return redirect('account_enter')
         else:
-            return redirect('account_enter')
+            context["registration_form"] = registration_form
+            context["login_form"] = login_form
+            return render(request,'account/account_index.html',context)
     else:
         return redirect('account_enter')
+
 
 def activate_user(request, key):
     """
@@ -206,6 +215,7 @@ def activate_user(request, key):
         profile.save()
         context['msg'] = "Your account is activated"
     return render(request,'account/activation_status.html',context)
+
 
 def new_activation(request, email=None):
     """
@@ -244,6 +254,7 @@ def new_activation(request, email=None):
         context['activation_msg'] = "Your account is already verified"
     return render(request,'account/activation_status.html',{})
 
+
 def update_email(request):
     """
     Updates user email_id
@@ -259,6 +270,7 @@ def update_email(request):
     else:
         context['email_err_msg'] = "Please Update your email"
     return render(request,'account/activation_status.html',context)
+
 
 @login_required
 @email_verified
@@ -286,6 +298,7 @@ def slot_new(request):
         all_board_users_id = [i.user.id for i in all_board_users]
     else:
         all_board_users_id = []
+        return redirect('account_enter')
     slot_history = Slot.objects.filter(user=user).order_by("-start_time") 
     context = {}
     now = timezone.now()
@@ -312,39 +325,43 @@ def slot_new(request):
                                         start_time__date=new_slot_date
                                         )
                 if len(new_slot_date_slots) >= settings.LIMIT:
-                    messages.warning(request,'Cannot Book more than {0} \
+                    messages.error(request,'Cannot Book more than {0} \
                         slots in advance in a day'.format(settings.LIMIT))
                 else:
-                    if Slot.objects.check_booked_slots(
-                        new_slot.start_time, all_board_users_id):
+                    if new_slot.start_time.time():
+                        if Slot.objects.check_booked_slots(
+                            new_slot.start_time, all_board_users_id):
 
-                        if new_slot.start_time >= now:
-                            new_slot.start_time = dt.combine(
-                                       new_slot.start_time.date(),
-                                       time(new_slot.start_time.hour,00)
-                                       )
-                            new_slot.end_time = dt.combine(
-                                       new_slot.start_time.date(),
-                                       time(new_slot.start_time.hour,
-                                            settings.SLOT_DURATION
-                                            )
-                                       )
-                            new_slot.user = user
-                            new_slot.save()
-                            messages.success(request,
-                                             'Slot created successfully.'
-                                             )
+                            if new_slot.start_time >= now:
+                                new_slot.start_time = dt.combine(
+                                           new_slot.start_time.date(),
+                                           time(new_slot.start_time.hour,00)
+                                           )
+                                new_slot.end_time = dt.combine(
+                                           new_slot.start_time.date(),
+                                           time(new_slot.start_time.hour,
+                                                settings.SLOT_DURATION
+                                                )
+                                           )
+                                new_slot.user = user
+                                new_slot.save()
+                                messages.success(request,
+                                                 'Slot booked successfully.'
+                                                 )
+                            else:
+                                messages.error(request,
+                                                 'Start time selected'
+                                                 + ' is before today.'
+                                                 + 'Please choose again.'
+                                                )
                         else:
                             messages.error(request,
-                                             'Start time selected'
-                                             + ' is before today.'
-                                             + 'Please choose again.'
-                                            )
+                                           'Slot is already booked.'
+                                         + ' Try the next slot.'
+                                        )
                     else:
-                        messages.error(request,
-                                       'Slot is already booked.'
-                                     + ' Try the next slot.'
-                                    )
+                        messages.error(request,'Please also select Time with \
+                                                Date.')
 
         if request.POST.get("book_now") == "book_now":
             if not current_slot:
@@ -358,7 +375,7 @@ def slot_new(request):
                                    time(now.hour, settings.SLOT_DURATION)
                                    )
                                 )
-                    messages.success(request,'Slot created successfully.')
+                    messages.success(request,'Slot booked successfully.')
                 else:
                     messages.error(request,
                                    'Slot is booked by someone else.'
@@ -372,10 +389,14 @@ def slot_new(request):
 
     else:
         form = SlotCreationForm()
+        avail_slot = Slot.objects.check_booked_slots(now,all_board_users_id)
         context['history']=slot_history
         context['form']=form
         context['now'] = now
+        context['duration'] = settings.SLOT_DURATION
         context['board_all_booked_slots'] = board_all_booked_slots
+        context['current_slot'] = current_slot
+        context['avail_slot'] = avail_slot
     return render(request,'slot/create_slot.html',context)
     
 
@@ -387,6 +408,7 @@ def check_connection(request):
     Check connection if it exists or not with the Client App .
     """
     return HttpResponse("TESTOK")
+
 
 def client_version(request):
     """
@@ -460,6 +482,7 @@ def initiation(request):
         }
     return JsonResponse(message, safe=True, status=200)
 
+
 def map_sbhs_to_rpi():
     """
     Scans if the machine are connected to the rpis.
@@ -483,12 +506,14 @@ def map_sbhs_to_rpi():
                 dead_machines.append(r_pi)
     return map_machines, dead_machines
 
+
 def connect_sbhs(rpi_ip, experiment_url):
     connect_rpi = requests.get("http://{0}/experiment/{1}".format(
                            rpi_ip, experiment_url), timeout=5
                         )
     data = json.loads(connect_rpi.text)
     return data
+
 
 @login_required
 @csrf_exempt
@@ -554,6 +579,7 @@ def experiment(request):
                                         )
                             )
 
+
 def log_data(mid, heat, fan, temp):
     """
     Update the experimental log file.
@@ -568,6 +594,7 @@ def log_data(mid, heat, fan, temp):
         return True
     except:
         return False
+
 
 @login_required
 def logs(request):
@@ -586,6 +613,7 @@ def logs(request):
     context['experiment'] = experiment
     return render(request,'experiment/logs.html',context)
 
+
 @login_required
 def download_user_log(request, experiment_id):
     """
@@ -593,7 +621,9 @@ def download_user_log(request, experiment_id):
     """
     user = request.user
     experiment_data = Experiment.objects.get(slot__id=experiment_id)
-    f = open(os.path.join(settings.EXPERIMENT_LOGS_DIR, experiment_data.log),"r")
+    f = open(os.path.join(
+                          settings.EXPERIMENT_LOGS_DIR,
+                          experiment_data.log), "r")
     data = f.read()
     f.close()
     return HttpResponse(data, content_type="text/text")
@@ -605,6 +635,7 @@ def is_moderator(user):
     """Check if the user is having moderator rights"""
     if user.profile.is_moderator:
         return True
+
 
 @login_required
 def moderator_dashboard(request):
@@ -665,6 +696,7 @@ def profile(request, mid):
         
     return render(request,"dashboard/profile.html",context)
 
+
 @login_required
 def download_log(request, mid):
     """
@@ -684,10 +716,12 @@ def download_log(request, mid):
         except:
             return HttpResponse("Requested log file does not exist")
 
+
 def zipdir(path,ziph):
     for root, dirs, files in os.walk(path):
         for file in files:
             ziph.write(os.path.join(root,file))
+
 
 @login_required
 def logs_folder_index(request):
@@ -712,6 +746,7 @@ def logs_folder_index(request):
             response['Content-Disposition'] = 'attachment; filename="{0}"'\
                                                 .format('Experiments.zip')
             return response
+
 
 @login_required
 def all_bookings(request):
@@ -776,6 +811,7 @@ def update_board_values(request, mid):
 
     return redirect("test_boards")
 
+
 @login_required
 def test_boards(request):
     """
@@ -815,22 +851,24 @@ def test_boards(request):
                 temp = connect_sbhs(device.raspi_path,
                                    "get_temp/{0}".format(device.usb_id)
                                     )
+                devices["temp"] = temp
             except requests.exceptions.ConnectionError:
                 if device.raspi_path not in dead_servers:
                     dead_servers.append(device.raspi_path)
             devices["board"] = device
-            devices["temp"] = temp
             all_devices.append(devices)
         context["all_devices"] = all_devices
         if dead_servers:
             context["dead_servers"] = dead_servers
         return render(request,'dashboard/test_boards.html',context)
 
+
 def user_exists(username):
     try:
         user = User.objects.get(username=username)
     except:
         Http404("User by username: {} does not exists".format(username))
+
 
 @login_required
 def update_mid(request):
@@ -850,6 +888,7 @@ def update_mid(request):
 
         context["form"]= UserBoardForm()
     return render(request, 'dashboard/update_mid.html',context)
+
 
 @login_required
 def fetch_logs(request):
@@ -874,12 +913,15 @@ def fetch_logs(request):
                             end_time__date__lte=date(ye,me,de)
                             )
                     if slot:
-                        experiment = Experiment.objects.filter(slot__in=slot)
+                        experiment = Experiment.objects.filter(
+                                                        slot__in=slot
+                                                        )
                         context["experiments"] = experiment
         else:
             form=FilterLogsForm()
         context['form']=form
     return render(request,'dashboard/fetch_logs.html',context)
+
 
 def download_file(request, experiment_id):
     try:
@@ -892,8 +934,8 @@ def download_file(request, experiment_id):
                                              experiment.log)
                        ).read())
         return response
-    except FileNotFoundError as fnfe:
-        raise fnfe
+    except:
+        raise Http404("Requested files does not exist.")
 
 
 ################## Webcam Views #############################
@@ -909,8 +951,12 @@ def show_video(request):
     if board:
         image_link = board.board.image_link()
         context["image_link"] = image_link
-    context["mid"] = board.board.mid
+    try:
+        context["mid"] = board.board.mid
+    except:
+        return redirect('account_enter')
     return render(request, 'webcam/show_video.html',context)
+
 
 @login_required
 def show_video_to_moderator(request,mid):
