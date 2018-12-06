@@ -50,7 +50,7 @@
 						<td>{{device.temp.temp}}</td>
 						<td><input type="text" name="set_heat" id="set_heat_{{device.board.mid}}"/></td>
 						<td><input type="text" name="set_fan" id="set_fan_{{device.board.mid}}"/></td>
-						<td><button id="submit_button" class="btn btn-primary"> Submit </button></td>
+						<td><button class = "btn btn-primary" {% if slot_status %} disabled {% endif %}>Submit</button></td>
 					</tr>
 					</form>	
 					{% endfor %}
@@ -72,13 +72,4 @@
 		{% endif %}
 	</div>
 </div>
-<script type="text/javascript">
-	(function(){
-		{% if slot_status %}
-			document.getElementById("submit_button").disabled = false;
-		{% else %}
-			document.getElementById("submit_button").disabled = true;
-		{% endif %}
-	})();
-</script>
 {% endblock %}

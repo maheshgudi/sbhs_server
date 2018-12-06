@@ -185,7 +185,6 @@ def user_register(request):
                 )
             return redirect('account_enter')
         else:
-            # return redirect('account_enter')
             context["registration_form"] = registration_form
             context["login_form"] = login_form
             return render(request,'account/account_index.html',context)
@@ -299,17 +298,14 @@ def slot_new(request):
         all_board_users_id = [i.user.id for i in all_board_users]
     else:
         all_board_users_id = []
+        return redirect('account_enter')
     slot_history = Slot.objects.filter(user=user).order_by("-start_time") 
     context = {}
     now = timezone.now()
     current_slot = slot_history.filter(start_time__lt=now, end_time__gte=now)
-    try:
-        board_all_booked_slots = Slot.objects.board_all_booked_slots(
-                                    board.board.mid
-                                    )
-    except:
-        raise Http404("As you have not been assigned any board, Probably \
-                        they all might be offline. Please contact admin.")
+    board_all_booked_slots = Slot.objects.board_all_booked_slots(
+                                board.board.mid
+                                )
     if not request.user.is_authenticated():
         return redirect('account_enter')
     
@@ -855,11 +851,11 @@ def test_boards(request):
                 temp = connect_sbhs(device.raspi_path,
                                    "get_temp/{0}".format(device.usb_id)
                                     )
+                devices["temp"] = temp
             except requests.exceptions.ConnectionError:
                 if device.raspi_path not in dead_servers:
                     dead_servers.append(device.raspi_path)
             devices["board"] = device
-            devices["temp"] = temp
             all_devices.append(devices)
         context["all_devices"] = all_devices
         if dead_servers:
@@ -958,8 +954,7 @@ def show_video(request):
     try:
         context["mid"] = board.board.mid
     except:
-        raise Http404("As you have not been assigned any board, You might \
-                      not be able to see video. Please contact admin.")
+        return redirect('account_enter')
     return render(request, 'webcam/show_video.html',context)
 
 
