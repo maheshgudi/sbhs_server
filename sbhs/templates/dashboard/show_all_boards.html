@@ -29,7 +29,7 @@
                                 <td><span class = "label label-{% if board.online %}success{% else %}danger{% endif %}">{% if board.online %}On{% else %}Off{% endif %}</span></td>
                                 <td><a href = "{% url 'show_video_to_moderator' board.mid %}">View Image</a></td>
                                 <td><a href = "{% url 'profile' board.mid %}">View Profile</a></td>
-                                <td><a href = "{% url 'download_log' board.mid %}" target="_blank">Download</a></td>
+                                <td><a href = "{% url 'download_log' board.mid %}">Download</a></td>
                             </tr>
                             {% endfor %}
                         </tbody>

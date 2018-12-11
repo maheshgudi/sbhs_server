@@ -11,6 +11,10 @@ from sbhs_server import settings
 
 MOD_GROUP_NAME = 'moderator'
 
+SLOT_TYPES = (
+    ('cs','CS'),
+    ('as','AS'),
+    )
 
 def create_group(group_name, app_label):
     try:
@@ -146,6 +150,7 @@ class Slot(models.Model):
     end_time = models.DateTimeField("End time of a slot",
                 default=timezone.now()+timedelta(
                     minutes=settings.SLOT_DURATION))
+    type_ = models.CharField(max_length=10, choices=SLOT_TYPES)
 
     objects = SlotManager()
 

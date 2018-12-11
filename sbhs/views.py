@@ -318,15 +318,31 @@ def slot_new(request):
             form = SlotCreationForm(request.POST)
             if form.is_valid():
                 new_slot = form.save(commit=False)
-
                 new_slot_date = new_slot.start_time.date()
                 new_slot_time = new_slot.start_time.time()
+                prev_hour = dt.combine(
+                            new_slot_date,time(
+                                new_slot_time.hour,00)) - timedelta(hours=1)
+                prev_slot = slot_history.filter(start_time__date=new_slot_date,
+                                                start_time__time=prev_hour)
+                next_hour = dt.combine(
+                                new_slot_date,time(
+                                new_slot_time.hour,00)) + timedelta(hours=1)
+                next_slot = slot_history.filter(start_time__date=new_slot_date,
+                                                start_time__time=next_hour)
+                if prev_slot.exists() or next_slot.exists():
+                    messages.error(request,
+                                   'Cannot book two consecutive slots.')
+                    return redirect('slot_new')
+
                 new_slot_date_slots = slot_history.filter(
-                                        start_time__date=new_slot_date
+                                        start_time__date=new_slot_date,
+                                        slot_type='as'
                                         )
                 if len(new_slot_date_slots) >= settings.LIMIT:
                     messages.error(request,'Cannot Book more than {0} \
                         slots in advance in a day'.format(settings.LIMIT))
+                    return redirect('slot_new')
                 else:
                     if new_slot.start_time.time():
                         if Slot.objects.check_booked_slots(
@@ -344,24 +360,30 @@ def slot_new(request):
                                                 )
                                            )
                                 new_slot.user = user
+                                new_slot.slot_type='as'
                                 new_slot.save()
                                 messages.success(request,
                                                  'Slot booked successfully.'
                                                  )
+                                return redirect('slot_new')
                             else:
                                 messages.error(request,
-                                                 'Start time selected'
-                                                 + ' is before today.'
-                                                 + 'Please choose again.'
+                                                 'Either you have not selected'
+                                                 + ' Time or the selected Time'
+                                                 + ' is before current time.'
+                                                 + ' Please choose again.'
                                                 )
+                                return redirect('slot_new')
                         else:
                             messages.error(request,
                                            'Slot is already booked.'
                                          + ' Try the next slot.'
                                         )
+                            return redirect('slot_new')
                     else:
                         messages.error(request,'Please also select Time with \
                                                 Date.')
+                        return redirect('slot_new')
 
         if request.POST.get("book_now") == "book_now":
             if not current_slot:
@@ -373,14 +395,17 @@ def slot_new(request):
                                            time(now.hour,00)),
                                 end_time=dt.combine(now.date(),
                                    time(now.hour, settings.SLOT_DURATION)
-                                   )
+                                   ),
+                                slot_type='cs'
                                 )
                     messages.success(request,'Slot booked successfully.')
+                    return redirect('slot_new')
                 else:
                     messages.error(request,
                                    'Slot is booked by someone else.'
                                  + ' Try the next slot.'
                                 )
+                    return redirect('slot_new')
             else:
                 messages.error(request,'Slot is already booked for \
                                 current time. Please select a future slot.'
@@ -660,7 +685,8 @@ def profile(request, mid):
             f = open(filename, "r")
             f.close()
         except:
-            raise Http404("Log does not exist for this profile.")
+            messages.error(request,'Log does not exist for this profile.')
+            return redirect('moderator_dashboard')
 
         delta_T = 1000
         data = subprocess.check_output("tail -n {0} {1}".format(
@@ -714,7 +740,8 @@ def download_log(request, mid):
             f.close()
             return HttpResponse(data, content_type='text/text')
         except:
-            return HttpResponse("Requested log file does not exist")
+            messages.error(request,"Requested log file does not exist.")
+            return redirect('moderator_dashboard')
 
 
 def zipdir(path,ziph):
@@ -935,7 +962,8 @@ def download_file(request, experiment_id):
                        ).read())
         return response
     except:
-        raise Http404("Requested files does not exist.")
+        messages.error(request,'Requested file does not exist.')
+        return redirect('fetch_logs')
 
 
 ################## Webcam Views #############################
