@@ -38,7 +38,7 @@ urlpatterns = [
 
     # restore password urls
     url(r'^account/password-reset/$', password_reset, 
-           {'template_name': 'registration/password_reset_form.html'},
+           {'template_name': 'registration/password_reset_form.html',},
            name='password_reset'),
     url(r'^account/password-reset/done/$', password_reset_done, 
             {'template_name': 'registration/password_reset_done.html'},

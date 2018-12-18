@@ -5,8 +5,8 @@ def production_details(request):
 	Context processor to access settings.py CONSTANTS in django
 	template.
 	"""
-	return {
-		'sitename':'vlabs.iitb.ac.in/sbhs',
-		'domain':settings.PRODUCTION_URL,
-		'vlabs_team':settings.SENDER_NAME,
-	}
+	context={}
+	context['sitename'] = request.META['HTTP_HOST']
+	context['domain'] = settings.PRODUCTION_URL
+	context['vlabs_team'] = settings.SENDER_NAME
+	return context

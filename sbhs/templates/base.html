@@ -52,6 +52,8 @@
 													<li><a style="padding-top: 10px;" class="dropdown-item" href="{% url 'pages_info'%}#info">Info</a></li>
 													<li><a class="dropdown-item" href="{% url 'pages_info'%}#theory">Theory</a><li>
 													<li><a class="dropdown-item" href="{% url 'pages_info'%}#procedure">Procedure</a></li>
+													<li><a class = "dropdown-item" href="{% url 'pages_feedback' %}#contact">Contact Us</a></li>
+													<li><a class = "dropdown-item" href="http://sbhs.os-hardware.in/forum" target="_blank">Forums</a></li>
 												</ul>
 											</div>
 								</li>
@@ -78,7 +80,6 @@
 
 	<div id = "body">
 		<div class="content">
-			
 			{% if messages %}	
 			<ul class = "messages">
 				{% for message in messages %}

@@ -27,11 +27,11 @@
 			</div>
 		</div>
 	</div>
-	<script type="text/javascript">
+	<script>
 		{% if request.user.profile.is_moderator %}
 			setInterval(function(){
 				var refresh = new Image();
-				refresh.src = "{% static  image_link %}";
+				refresh.src = "{% static image_link %}";
 				document.getElementById("videoImage").src = "{% static image_link %}";
 			}, 2000);
 		{% else %}
@@ -48,9 +48,7 @@
 				}, 3000);
 			}
 		}
-		(function(){
-			image_reloader();
-		})();
+		image_reloader();
 		{% endif %}
 	</script>
 {% endblock %}
